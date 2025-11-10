@@ -424,10 +424,34 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =============================================================================
-// FOOTER PARALLAX EFFECT
+// HERO PARALLAX EFFECT
 // =============================================================================
 gsap.registerPlugin(ScrollTrigger);
 
+function initHeroParallax() {
+  const hero = document.querySelector("[data-hero-parallax]");
+
+  if (!hero) return;
+
+  const heroImage = hero.querySelector("[data-hero-parallax-image]");
+
+  if (heroImage) {
+    gsap.to(heroImage, {
+      yPercent: 30,
+      ease: "none",
+      scrollTrigger: {
+        trigger: hero,
+        start: "top top",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+  }
+}
+
+// =============================================================================
+// FOOTER PARALLAX EFFECT
+// =============================================================================
 function initFooterParallax() {
   document.querySelectorAll("[data-footer-parallax]").forEach((el) => {
     const tl = gsap.timeline({
@@ -450,8 +474,9 @@ function initFooterParallax() {
   });
 }
 
-// Initialize Footer with Parallax Effect
+// Initialize Parallax Effects
 document.addEventListener("DOMContentLoaded", () => {
+  initHeroParallax();
   initFooterParallax();
 });
 
