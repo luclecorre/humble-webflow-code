@@ -526,3 +526,4 @@ function initButtonCharacterStagger() {
 document.addEventListener("DOMContentLoaded", () => {
   initButtonCharacterStagger();
 });
+
