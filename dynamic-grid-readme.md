@@ -149,6 +149,7 @@ Example: `Alt text: "Hero image [cover]"`
 - No canvas operations or pixel scanning
 - IntersectionObserver handles lazy-loaded images
 - Debounced resize (250ms) prevents excessive recalculation
+- Lazy-loaded images: IntersectionObserver detects when CMS images enter the viewport and applies grid logic once on first intersection.
 
 ### Mobile Breakpoint
 767px and below (landscape mobile down)
