@@ -3,9 +3,13 @@
 // =============================================================================
 (function () {
   document.addEventListener("DOMContentLoaded", function () {
-    // Query the element you created in Webflow
     var btn = document.querySelector(".contact-button");
-    if (!btn) return;
+    if (!btn) {
+      console.warn(
+        "Contact button not found - check .contact-button class exists"
+      );
+      return;
+    }
 
     var inner = btn.querySelector(".contact-inner");
     var emailEl = btn.querySelector(".email");
@@ -242,7 +246,7 @@ function destroyNavbarScrollAnimation() {
 }
 
 window.addEventListener("resize", () => {
-  initNavbarScrollAnimation();
+  ScrollTrigger.getAll().forEach((trigger) => trigger.refresh());
 });
 
 initNavbarScrollAnimation();
@@ -290,7 +294,6 @@ function initContentRevealScroll() {
               autoAlpha: 1,
               duration: animDuration,
               ease: animEase,
-              onComplete: () => gsap.set(groupEl, { clearProps: "all" }),
             }),
         });
         return;
@@ -366,7 +369,6 @@ function initContentRevealScroll() {
                   autoAlpha: 1,
                   duration: animDuration,
                   ease: animEase,
-                  onComplete: () => gsap.set(slot.el, { clearProps: "all" }),
                 },
                 slotTime
               );
@@ -380,8 +382,6 @@ function initContentRevealScroll() {
                     autoAlpha: 1,
                     duration: animDuration,
                     ease: animEase,
-                    onComplete: () =>
-                      gsap.set(slot.parentEl, { clearProps: "all" }),
                   },
                   slotTime
                 );
@@ -402,8 +402,6 @@ function initContentRevealScroll() {
                       autoAlpha: 1,
                       duration: animDuration,
                       ease: animEase,
-                      onComplete: () =>
-                        gsap.set(nestedChild, { clearProps: "all" }),
                     },
                     slotTime + nestedIndex * nestedStaggerSec
                   );
@@ -420,8 +418,9 @@ function initContentRevealScroll() {
 }
 
 // Initialize Content Reveal on Scroll
+let contentRevealCleanup;
 document.addEventListener("DOMContentLoaded", () => {
-  initContentRevealScroll();
+  contentRevealCleanup = initContentRevealScroll();
 });
 
 // =============================================================================
