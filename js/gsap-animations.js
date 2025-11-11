@@ -444,7 +444,7 @@ function initHeroParallax() {
         start: "top top",
         end: "bottom top",
         scrub: true,
-      }
+      },
     });
   }
 }
@@ -526,4 +526,3 @@ function initButtonCharacterStagger() {
 document.addEventListener("DOMContentLoaded", () => {
   initButtonCharacterStagger();
 });
-

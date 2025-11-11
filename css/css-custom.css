@@ -172,3 +172,10 @@
 .portfolio-tag-item[style*="background-color: rgb(51, 124, 255)"] {
   border-radius: 0.4em; 
 }
+
+/* ------------------------- Portfolio Card Load -------------------------  */
+
+[data-portfolio-card] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
