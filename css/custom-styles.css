@@ -1,0 +1,303 @@
+/* Box Model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove pseudo-element content in embeds and rich text */
+.w-embed::before, 
+.w-embed::after,
+.w-richtext::before, 
+.w-richtext::after {
+  content: unset;
+}
+
+/* Responsive type 
+html { 
+  font-size: 1.1875rem;
+  background-color: var(--_theme---background);
+}
+@media screen and (max-width:1920px) { 
+  html { font-size: calc(0.4374999999999999rem + 0.6250000000000001vw); } 
+}
+@media screen and (max-width:1440px) { 
+  html { font-size: calc(0.8126951092611863rem + 0.20811654526534862vw); } 
+}
+@media screen and (max-width:479px) { 
+  html { font-size: calc(0.7494769874476988rem + 0.8368200836820083vw); } 
+}
+*/
+
+/* Typography */
+h1, h2, h3, h4, h5, h6, p, blockquote, label {
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  margin: 0;
+}
+
+body, p {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+  text-wrap: pretty;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* Line Height Trim */
+:not(.u-text-trim-off) > :is(h1,h2,h3,h4,h5,h6,p):not(.u-text-trim-off,:has([class*="u-text-style-"]))::before,
+[class*="u-text-style-"]:not(.u-text-trim-off,:has(h1,h2,h3,h4,h5,h6,p))::before {
+  content: "";
+  display: table;
+  margin-bottom: calc(-0.5lh + var(--_text-style---trim-top));
+}
+
+:not(.u-text-trim-off) > :is(h1,h2,h3,h4,h5,h6,p):not(.u-text-trim-off,:has([class*="u-text-style-"]))::after,
+[class*="u-text-style-"]:not(.u-text-trim-off,:has(h1,h2,h3,h4,h5,h6,p))::after {
+  content: "";
+  display: table;
+  margin-bottom: calc(-0.5lh + var(--_text-style---trim-bottom));
+}
+
+/* Links */
+a:not([class]) {
+  text-decoration: underline;
+}
+
+/* Media Elements */
+img,
+picture,
+svg,
+video,
+canvas,
+audio,
+iframe,
+embed,
+object {
+  display: block;
+  vertical-align: middle;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  font-style: italic;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+img::selection {
+  background: transparent;
+}
+
+svg {
+  fill: currentColor;
+  max-width: 100%;
+}
+
+video {
+  width: 100%;
+  object-fit: cover;
+}
+
+/* Form Elements */
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select:has(option[value=""]:checked) {
+  color: rgba(0, 0, 0, 0.6);
+  color: color-mix(in lab, currentcolor 60%, transparent);
+}
+
+@media (prefers-color-scheme: light) {
+  option { 
+    color: black; 
+  }
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+textarea {
+  font-size: 16px;
+}
+
+::placeholder {
+  opacity: 0.6;
+  color: currentColor;
+}
+
+/* Buttons */
+button,
+[role="button"] {
+  border: none;
+  padding: 0;
+  background-color: transparent;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Focus States */
+:focus-visible {
+  outline: 2px solid var(--brand, #0066cc);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--_theme---selection--background, var(--brand, #0066cc));
+  color: var(--_theme---selection--text, var(--black, #000));
+  text-shadow: none;
+}
+
+/* Mobile Interactions */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Webflow Specific */
+.wf-empty {
+  padding: 0;
+}
+
+.w-richtext > :first-child {
+  margin-top: 0;
+}
+
+.w-richtext > :last-child {
+  margin-bottom: 0;
+}
+
+/* Rich Text Links */
+.w-richtext a {
+  position: relative;
+  z-index: 4;
+}
+
+.w-lightbox-backdrop {
+  font-weight: normal;
+}
+
+.w-lightbox-strip {
+  padding: 0.5rem;
+}
+
+.w-lightbox-item {
+  padding: 0.25rem;
+  margin: 0.25rem;
+  outline-offset: 0;
+}
+
+.w-lightbox-control {
+  outline: none !important;
+}
+
+.w-slider-dot {
+  flex: 0 0 auto;
+}
+
+/* Margin Trim */
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim) ~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim)),
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim) ~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim)).u-display-contents > :first-child {
+  margin-top: 0;
+}
+
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:has(~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim))),
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:has(~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim))).u-display-contents > :last-child {
+  margin-bottom: 0;
+}
+
+/* Line Clamp */
+[class*="u-line-clamp"]:not(.w-richtext),
+[class*="u-line-clamp"].w-richtext > * {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 0.2rem;
+}
+
+[class*="u-line-clamp"].w-richtext > :not(:first-child) { 
+  display: none; 
+}
+
+.u-line-clamp-2:not(.w-richtext), 
+.u-line-clamp-2.w-richtext > * { 
+  -webkit-line-clamp: 2; 
+}
+
+.u-line-clamp-3:not(.w-richtext), 
+.u-line-clamp-3.w-richtext > * { 
+  -webkit-line-clamp: 3; 
+}
+
+.u-line-clamp-4:not(.w-richtext), 
+.u-line-clamp-4.w-richtext > * { 
+  -webkit-line-clamp: 4; 
+}
+
+/* Utility Classes */
+[hide],
+.css,
+.js {
+  display: none;
+}
+
+[pointer="off"] {
+  pointer-events: none;
+}
+
+[pointer="on"] {
+  pointer-events: auto;
+}
+
+[color-inherit] {
+  color: inherit;
+}
+
+[inline-flex] {
+  display: inline-flex;
+}
+
+.spacer,
+.spacer * {
+  padding: 0;
+}
