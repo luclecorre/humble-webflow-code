@@ -250,9 +250,8 @@ button:disabled {
   display: -webkit-box;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
-  overflow: hidden;
   overflow: clip;
-  overflow-clip-margin: 0.2rem;
+  overflow-clip-margin: 0.15lh;
 }
 
 [class*="u-line-clamp"].w-richtext > :not(:first-child) { 
@@ -301,3 +300,4 @@ button:disabled {
 .spacer * {
   padding: 0;
 }
+

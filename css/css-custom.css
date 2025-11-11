@@ -1,0 +1,174 @@
+/* Current page state */
+.navbar-link.w--current .navbar-dot.is-menu {
+  background-color: var(--ui--navbar-dot-active);
+}
+
+/* Hover states */
+.navbar-link:hover .navbar-dot.is-menu,
+.navbar-menu-button:hover .navbar-dot.is-menu {
+  background-color: var(--ui--navbar-dot-active);
+}
+
+/* Smooth colour transition */
+.navbar-dot.is-menu {
+  transition: background-color 0.3s ease;
+}
+
+
+/* ------------------------- Underline Link [https://osmo.supply/] -------------------------  */
+
+[data-underline-link] {
+  text-decoration: none;
+  position: relative;
+}
+
+[data-underline-link]::before {
+  content: "";
+  position: absolute;
+  bottom: -0.2rem;
+  left: 0;
+  width: 100%;
+  height: 0.075rem;
+  background-color: currentColor;
+  transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+  transform-origin: right;
+  transform: scaleX(0) rotate(0.001deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-hover]:hover [data-underline-link]::before,
+  [data-underline-link]:hover::before {
+    transform-origin: left;
+    transform: scaleX(1) rotate(0.001deg);
+  }  
+}
+
+/* ------------------------- Stagger Button -------------------------  */
+
+/* Characters */
+.btn-animate-chars [data-button-animate-chars] {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.btn-animate-chars [data-button-animate-chars] span {
+  display: inline-block;
+  position: relative;
+  text-shadow: 0px 1.3em currentColor;
+  transform: translateY(0em) rotate(0.001deg);
+  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.btn-animate-chars:hover [data-button-animate-chars] span {
+  transform: translateY(-1.3em) rotate(0.001deg);
+}
+
+/* Icon rotation animation */
+.btn-plus-icon {
+  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.btn-animate-chars:hover .btn-plus-icon {
+  transform: rotate(90deg);
+}
+
+/* ------------------------- Parallax Hero -------------------------  */
+
+[data-hero-parallax] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  overflow: hidden;
+}
+
+[data-hero-parallax-image] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  height: 130%;
+  position: absolute;
+  inset: 0;
+  top: -15%;
+}
+
+/* ------------------------- Parallax Footer -------------------------  */
+
+[data-footer-parallax] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+[data-footer-parallax-inner] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ------------------------- Dynamic Grid -------------------------  */
+
+.cms-project-grid {
+  display: grid;
+  gap: var(--_size---site--margin);
+}
+
+.cms-project-grid.grid-1-col {
+  grid-template-columns: 1fr;
+}
+
+.cms-project-grid.grid-2-col {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.cms-project-grid.grid-3-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Image wrapper - default auto ratio */
+.image-wrapper-cms {
+  aspect-ratio: auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Image - default cover */
+.image-cms {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Mobile: grid-2-col and grid-3-col stack to single column */
+@media (max-width: 767px) {
+  .cms-project-grid.grid-2-col,
+  .cms-project-grid.grid-3-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------- Tag Shapes -------------------------  */
+
+/* Creative - Lilac */
+.portfolio-tag-item[style*="background-color: rgb(197, 140, 255)"] {
+  border-radius: 0.2em;
+}
+
+/* Marketing - Green */
+.portfolio-tag-item[style*="background-color: rgb(29, 170, 38)"] {
+  padding: 0 0.2em;
+  border-radius: 2em; 
+}
+
+/* Strategy - Orange */
+.portfolio-tag-item[style*="background-color: rgb(255, 81, 2)"] {
+  border-radius: 0; 
+}
+
+/* Website - Blue */
+.portfolio-tag-item[style*="background-color: rgb(51, 124, 255)"] {
+  border-radius: 0.4em; 
+}
