@@ -326,23 +326,26 @@ document.addEventListener("DOMContentLoaded", function () {
 // SERVICE LABEL TAGS
 // =============================================================================
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".service-label").forEach((label) => {
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.portfolio-tag-item').forEach(item => {
+    const label = item.querySelector('.service-label');
+    if (!label) return;
+    
     const text = label.textContent.trim().toUpperCase();
-
-    switch (text) {
-      case "CREATIVE":
-        label.style.borderRadius = "0.2em";
+    
+    switch(text) {
+      case 'CREATIVE':
+        item.style.borderRadius = '0.2em';
         break;
-      case "MARKETING":
-        label.style.padding = "0 0.2em";
-        label.style.borderRadius = "2em";
+      case 'MARKETING':
+        item.style.padding = '0 0.2em';
+        item.style.borderRadius = '2em';
         break;
-      case "STRATEGY":
-        label.style.borderRadius = "0";
+      case 'STRATEGY':
+        item.style.borderRadius = '0';
         break;
-      case "WEBSITE":
-        label.style.borderRadius = "0.4em";
+      case 'WEBSITE':
+        item.style.borderRadius = '0.4em';
         break;
     }
   });
