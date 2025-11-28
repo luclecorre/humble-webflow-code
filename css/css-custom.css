@@ -150,32 +150,45 @@
   }
 }
 
-/* ------------------------- Tag Shapes -------------------------  */
 
-/* Creative - Lilac */
-.portfolio-tag-item[style*="background-color: rgb(197, 140, 255)"] {
-  border-radius: 0.2em;
+/* ------------------------- Bunny Background Video (HLS & Simple MP4) -------------------------  */
+
+/* Animation */
+[data-bunny-background-init] :is(.bunny-bg__placeholder, .bunny-bg__loading),
+[data-bunny-simple-init] :is(.bunny-bg__placeholder, .bunny-bg__loading) {
+  transition: opacity 0.3s linear, visibility 0.3s linear;
 }
 
-/* Marketing - Green */
-.portfolio-tag-item[style*="background-color: rgb(29, 170, 38)"] {
-  padding: 0 0.2em;
-  border-radius: 2em; 
-}
-
-/* Strategy - Orange */
-.portfolio-tag-item[style*="background-color: rgb(255, 81, 2)"] {
-  border-radius: 0; 
-}
-
-/* Website - Blue */
-.portfolio-tag-item[style*="background-color: rgb(51, 124, 255)"] {
-  border-radius: 0.4em; 
-}
-
-/* ------------------------- Portfolio Card Load -------------------------  */
-
-[data-portfolio-card] {
+/* Placeholder - Hide when playing/paused/ready */
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__placeholder,
+[data-bunny-background-init][data-player-status="paused"] .bunny-bg__placeholder,
+[data-bunny-background-init][data-player-activated="true"][data-player-status="ready"] .bunny-bg__placeholder,
+[data-bunny-simple-init][data-player-status="playing"] .bunny-bg__placeholder,
+[data-bunny-simple-init][data-player-status="paused"] .bunny-bg__placeholder,
+[data-bunny-simple-init][data-player-activated="true"][data-player-status="ready"] .bunny-bg__placeholder {
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+}
+
+/* Play/Pause Icons - Hide play icon when playing/loading */
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__play-svg,
+[data-bunny-background-init][data-player-status="loading"] .bunny-bg__play-svg,
+[data-bunny-simple-init][data-player-status="playing"] .bunny-bg__play-svg,
+[data-bunny-simple-init][data-player-status="loading"] .bunny-bg__play-svg {
+  display: none;
+}
+
+/* Play/Pause Icons - Show pause icon when playing/loading */
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__pause-svg,
+[data-bunny-background-init][data-player-status="loading"] .bunny-bg__pause-svg,
+[data-bunny-simple-init][data-player-status="playing"] .bunny-bg__pause-svg,
+[data-bunny-simple-init][data-player-status="loading"] .bunny-bg__pause-svg {
+  display: block;
+}
+
+/* Loading Indicator */
+[data-bunny-background-init][data-player-status="loading"] .bunny-bg__loading,
+[data-bunny-simple-init][data-player-status="loading"] .bunny-bg__loading {
+  opacity: 1;
+  visibility: visible;
 }
