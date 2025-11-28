@@ -16,20 +16,20 @@ jobs:
         run: |
           curl -X PUT \
             -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}" \
-            --data-binary "@js/gsap-animations.js" \
-            "https://storage.bunnycdn.com/${{ secrets.BUNNY_STORAGE_ZONE }}/js/gsap-animations.js"
+            --data-binary "@js/custom.js" \
+            "https://storage.bunnycdn.com/${{ secrets.BUNNY_STORAGE_ZONE }}/js/custom.js"
           
           curl -X PUT \
             -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}" \
-            --data-binary "@js/dynamic-grid.js" \
-            "https://storage.bunnycdn.com/${{ secrets.BUNNY_STORAGE_ZONE }}/js/dynamic-grid.js"
+            --data-binary "@js/gsap-animations.js" \
+            "https://storage.bunnycdn.com/${{ secrets.BUNNY_STORAGE_ZONE }}/js/gsap-animations.js"
       
       - name: Purge BunnyCDN Cache
         run: |
           curl -X POST \
-            "https://api.bunny.net/purge?url=https://humble-website.b-cdn.net/js/gsap-animations.js&async=false" \
+            "https://api.bunny.net/purge?url=https://humble-website.b-cdn.net/js/custom.js&async=false" \
             -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}"
           
           curl -X POST \
-            "https://api.bunny.net/purge?url=https://humble-website.b-cdn.net/js/dynamic-grid.js&async=false" \
+            "https://api.bunny.net/purge?url=https://humble-website.b-cdn.net/js/gsap-animations.js&async=false" \
             -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}"
