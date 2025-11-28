@@ -90,7 +90,11 @@ function initBunnyPlayerBackground() {
           hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             hls.loadSource(src);
           });
-          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+          hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+            if (data && data.levels && data.levels.length) {
+              // Force highest quality index
+              hls.startLevel = data.levels.length - 1;
+            }
             readyIfIdle(player, pendingPlay);
           });
           player._hls = hls;
