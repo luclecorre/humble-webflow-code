@@ -261,6 +261,7 @@ function initBunnyPlayerSimple() {
         player.setAttribute("data-player-activated", v ? "true" : "false");
       }
       if (!player.hasAttribute("data-player-activated")) setActivated(false);
+      if (!player.hasAttribute("data-player-status")) setStatus("idle");
 
       // Configuration flags
       var lazyMode = player.getAttribute("data-player-lazy");
@@ -292,14 +293,12 @@ function initBunnyPlayerSimple() {
       function attachVideo() {
         if (isAttached) return;
         isAttached = true;
+        video.preload = isLazy ? "none" : "auto";
         video.src = src;
       }
 
       // Initialize based on lazy mode
-      if (isLazy) {
-        video.preload = "none";
-      } else {
-        video.preload = "auto";
+      if (!isLazy) {
         attachVideo();
       }
 
