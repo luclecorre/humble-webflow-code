@@ -1,0 +1,35 @@
+name: Deploy to BunnyCDN
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'js/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Upload JS files to BunnyCDN
+        run: |
+          curl -X PUT \
+            -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}" \
+            --data-binary "@js/gsap-animations.js" \
+            "https://storage.bunnycdn.com/${{ secrets.BUNNY_STORAGE_ZONE }}/js/gsap-animations.js"
+          
+          curl -X PUT \
+            -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}" \
+            --data-binary "@js/dynamic-grid.js" \
+            "https://storage.bunnycdn.com/${{ secrets.BUNNY_STORAGE_ZONE }}/js/dynamic-grid.js"
+      
+      - name: Purge BunnyCDN Cache
+        run: |
+          curl -X POST \
+            "https://api.bunny.net/purge?url=https://humble-website.b-cdn.net/js/gsap-animations.js&async=false" \
+            -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}"
+          
+          curl -X POST \
+            "https://api.bunny.net/purge?url=https://humble-website.b-cdn.net/js/dynamic-grid.js&async=false" \
+            -H "AccessKey: ${{ secrets.BUNNY_API_KEY }}"
