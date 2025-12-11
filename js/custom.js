@@ -92,8 +92,12 @@ function initBunnyPlayerBackground() {
           });
           hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
             if (data && data.levels && data.levels.length) {
-              // Force highest quality index
-              hls.startLevel = data.levels.length - 1;
+              // Find 1080p level (height === 1080)
+              var level1080 = data.levels.findIndex(function(level) {
+                return level.height === 1080;
+              });
+              // Use 1080p if found, otherwise fallback to highest quality
+              hls.startLevel = level1080 !== -1 ? level1080 : data.levels.length - 1;
             }
             readyIfIdle(player, pendingPlay);
           });
@@ -225,7 +229,10 @@ function initBunnyPlayerBackground() {
 
 // Initialize Bunny HTML HLS Player (Background)
 document.addEventListener("DOMContentLoaded", function () {
-  initBunnyPlayerBackground();
+  // Delay initialization to allow loader to complete (2000ms)
+  setTimeout(function() {
+    initBunnyPlayerBackground();
+  }, 2000);
 });
 
 // =============================================================================
@@ -403,7 +410,10 @@ function initBunnyPlayerSimple() {
 
 // Initialize Bunny Simple MP4 Player (Background)
 document.addEventListener("DOMContentLoaded", function () {
-  initBunnyPlayerSimple();
+  // Delay initialization to allow loader to complete (2000ms)
+  setTimeout(function() {
+    initBunnyPlayerSimple();
+  }, 2000);
 });
 
 // =============================================================================
