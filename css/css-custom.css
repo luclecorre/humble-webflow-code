@@ -1,3 +1,8 @@
+/* Preloader */
+.wf-design-mode .loader{ display: none; }
+
+[data-load-reset]{ opacity: 0; }
+
 /* Current page state */
 .navbar-link.w--current .navbar-dot.is-menu {
   background-color: var(--ui--navbar-dot-active);
