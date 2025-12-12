@@ -544,5 +544,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // =============================================================================
-// TEST
+// Hide loader in Preview mode
 // =============================================================================
+
+if (window.location.hostname.includes('canvas.webflow.com')) {
+  const loader = document.querySelector('.loader');
+  if (loader) {
+    loader.style.display = 'none';
+  }
+}

@@ -1,5 +1,11 @@
 /* Preloader */
-.wf-design-mode .loader{ display: none; }
+.wf-design-mode .loader {
+  display: none;
+}
+
+.wf-design-mode .loader.show-in-designer {
+  display: block !important;
+}
 
 [data-load-reset]{ opacity: 0; }
 
