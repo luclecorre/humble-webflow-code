@@ -14,25 +14,55 @@
 }
 
 body {
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  opacity: 1;
 }
 
-/* Responsive type 
-html { 
-  font-size: 1.1875rem;
-  background-color: var(--_theme---background);
-}
-@media screen and (max-width:1920px) { 
-  html { font-size: calc(0.4374999999999999rem + 0.6250000000000001vw); } 
-}
-@media screen and (max-width:1440px) { 
-  html { font-size: calc(0.8126951092611863rem + 0.20811654526534862vw); } 
-}
-@media screen and (max-width:479px) { 
-  html { font-size: calc(0.7494769874476988rem + 0.8368200836820083vw); } 
-}
-*/
+/* Fluid Design */
+  :root {
+    --font-from: 18;
+    --font-to: 20;
+    --vw-from: calc(1920 / 100);
+    --vw-to: calc(2400 / 100);
+    --coefficient: calc((var(--font-to) - var(--font-from)) / (var(--vw-to) - var(--vw-from)));
+    --base: calc((var(--font-from) - var(--vw-from) * var(--coefficient)) / 16);
+  }
+
+  html {
+    font-size: calc(var(--base) * 1rem + var(--coefficient) * 1vw);
+  }
+
+  @media screen and (max-width: 1920px) {
+    :root {
+      --font-from: 16;
+      --font-to: 18;
+      --vw-from: calc(1440 / 100);
+      --vw-to: calc(1920 / 100);
+      }
+  }
+
+  @media screen and (max-width: 1440px) {
+    :root {
+      --font-from: 14;
+      --font-to: 16;
+      --vw-from: calc(479 / 100);
+      --vw-to: calc(1440 / 100);
+      }
+  }
+
+  @media screen and (max-width: 479px) {
+    :root {
+      --font-from: 12;
+      --font-to: 16;
+      --vw-from: calc(1 / 100);
+      --vw-to: calc(479 / 100);
+      }
+  }
+
+  @media screen and (min-width: 2400px) {
+    html {
+      font-size: 20px;
+    }
+  }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6, p, blockquote, label {
@@ -304,4 +334,3 @@ button:disabled {
 .spacer * {
   padding: 0;
 }
-
