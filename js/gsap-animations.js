@@ -31,7 +31,7 @@ function initLogoRevealLoader(){
   .add("hideContent")
   .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
   .set(wrap, { display: "none" })
-  .add(function () { document.dispatchEvent(new CustomEvent("loaderComplete")); });
+  .call(function () { document.dispatchEvent(new CustomEvent("loaderComplete")); });
 
   // If there are items to hide FOUC for, reset them at the start
   if (resetTargets.length) {

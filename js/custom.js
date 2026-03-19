@@ -2,10 +2,11 @@
 // BUNNY BACKGROUND VIDEO
 // =============================================================================
 
-function initBunnyPlayerBackground() {
-  document
-    .querySelectorAll("[data-bunny-background-init]")
-    .forEach(function (player) {
+function initBunnyPlayerBackground(playerEl) {
+  var players = playerEl
+    ? [playerEl]
+    : Array.from(document.querySelectorAll("[data-bunny-background-init]"));
+  players.forEach(function (player) {
       var src = player.getAttribute("data-player-src");
 
       if (!src) return;
@@ -241,14 +242,44 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Initialize Bunny HTML HLS Player (Background) — after loader finishes
+// Initialize Bunny HTML HLS Player (Background)
+// data-player-init values:
+//   "loader"     (default) — init when loader animation completes
+//   "immediate"  — init straight away on DOMContentLoaded, ignores loader
+//   "visible"    — init only when element first scrolls into view
+function initBunnyPlayerBackgroundAll(mode) {
+  document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
+    var initMode = player.getAttribute("data-player-init") || "loader";
+    if (mode === "immediate" && initMode === "immediate") {
+      initBunnyPlayerBackground(player);
+    } else if (mode === "loader" && initMode === "loader") {
+      initBunnyPlayerBackground(player);
+    } else if (mode === "loader" && initMode === "visible") {
+      var visibleIO = new IntersectionObserver(function (entries, obs) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            obs.unobserve(player);
+            initBunnyPlayerBackground(player);
+          }
+        });
+      }, { threshold: 0.1 });
+      visibleIO.observe(player);
+    }
+  });
+}
+
+// Immediate players init on DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function () {
+  initBunnyPlayerBackgroundAll("immediate");
+});
+
 document.addEventListener("loaderComplete", function () {
-  initBunnyPlayerBackground();
+  initBunnyPlayerBackgroundAll("loader");
 });
 // Fallback: if loader is absent (e.g. Webflow preview), init after DOM ready
 document.addEventListener("DOMContentLoaded", function () {
   var wrap = document.querySelector("[data-load-wrap]");
-  if (!wrap) initBunnyPlayerBackground();
+  if (!wrap) initBunnyPlayerBackgroundAll("loader");
 });
 
 // =============================================================================
