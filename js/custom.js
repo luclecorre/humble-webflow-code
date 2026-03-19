@@ -2,11 +2,8 @@
 // BUNNY BACKGROUND VIDEO
 // =============================================================================
 
-function initBunnyPlayerBackground(playerEl) {
-  var players = playerEl
-    ? [playerEl]
-    : Array.from(document.querySelectorAll("[data-bunny-background-init]"));
-  players.forEach(function (player) {
+function initBunnyPlayerBackground() {
+  document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
       var src = player.getAttribute("data-player-src");
 
       if (!src) return;
@@ -34,15 +31,11 @@ function initBunnyPlayerBackground(playerEl) {
       if (!player.hasAttribute("data-player-activated")) setActivated(false);
 
       // Flags
-      var lazyMode = player.getAttribute("data-player-lazy"); // "true" | "false" (no meta)
+      var lazyMode = player.getAttribute("data-player-lazy");
       var isLazyTrue = lazyMode === "true";
       var autoplay = player.getAttribute("data-player-autoplay") === "true";
       var initialMuted = player.getAttribute("data-player-muted") === "true";
-
-      // Used to suppress 'ready' flicker when user just pressed play in lazy modes
       var pendingPlay = false;
-
-      // Autoplay forces muted + loop; IO will drive play/pause
       if (autoplay) {
         video.muted = true;
         video.loop = true;
@@ -63,8 +56,7 @@ function initBunnyPlayerBackground(playerEl) {
 
       // Attach media only once (for actual playback)
       var isAttached = false;
-      var userInteracted = false;
-      var lastPauseBy = ""; // 'io' | 'manual' | ''
+      var lastPauseBy = "";
       function attachMediaOnce() {
         if (isAttached) return;
         isAttached = true;
@@ -94,11 +86,9 @@ function initBunnyPlayerBackground(playerEl) {
           });
           hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
             if (data && data.levels && data.levels.length) {
-              // Find 1080p level (height === 1080)
               var level1080 = data.levels.findIndex(function(level) {
                 return level.height === 1080;
               });
-              // Use 1080p if found, otherwise fallback to highest quality
               hls.startLevel = level1080 !== -1 ? level1080 : data.levels.length - 1;
             }
             readyIfIdle(player, pendingPlay);
@@ -109,7 +99,6 @@ function initBunnyPlayerBackground(playerEl) {
         }
       }
 
-      // Initialize based on lazy mode
       if (isLazyTrue) {
         video.preload = "none";
       } else {
@@ -118,7 +107,6 @@ function initBunnyPlayerBackground(playerEl) {
 
       // Toggle play/pause
       function togglePlay() {
-        userInteracted = true;
         if (video.paused || video.ended) {
           if (isLazyTrue && !isAttached) attachMediaOnce();
           pendingPlay = true;
@@ -175,7 +163,7 @@ function initBunnyPlayerBackground(playerEl) {
         setActivated(false);
       });
 
-      // In-view auto play/pause (only when autoplay is true)
+      // In-view auto play/pause
       if (autoplay) {
         if (player._io) {
           try {
@@ -211,7 +199,6 @@ function initBunnyPlayerBackground(playerEl) {
       }
     });
 
-  // Helper: Ready status guard
   function readyIfIdle(player, pendingPlay) {
     if (
       !pendingPlay &&
@@ -222,64 +209,30 @@ function initBunnyPlayerBackground(playerEl) {
     }
   }
 
-  // Helper: safe programmatic play
   function safePlay(video) {
     var p = video.play();
     if (p && typeof p.then === "function") p.catch(function () {});
   }
 }
 
-// Set posters immediately on DOMContentLoaded (no delay) so something is
-// visible as soon as the element enters the viewport during scroll
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
     var src = player.getAttribute("data-player-src");
     if (!src) return;
     var video = player.querySelector("video");
     if (!video || video.getAttribute("poster")) return;
-    var thumbnailSrc = src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg");
-    video.setAttribute("poster", thumbnailSrc);
+    video.setAttribute("poster", src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg"));
   });
-});
 
-// Initialize Bunny HTML HLS Player (Background)
-// data-player-init values:
-//   "loader"     (default) — init when loader animation completes
-//   "immediate"  — init straight away on DOMContentLoaded, ignores loader
-//   "visible"    — init only when element first scrolls into view
-function initBunnyPlayerBackgroundAll(mode) {
-  document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
-    var initMode = player.getAttribute("data-player-init") || "loader";
-    if (mode === "immediate" && initMode === "immediate") {
-      initBunnyPlayerBackground(player);
-    } else if (mode === "loader" && initMode === "loader") {
-      initBunnyPlayerBackground(player);
-    } else if (mode === "loader" && initMode === "visible") {
-      var visibleIO = new IntersectionObserver(function (entries, obs) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            obs.unobserve(player);
-            initBunnyPlayerBackground(player);
-          }
-        });
-      }, { threshold: 0.1 });
-      visibleIO.observe(player);
-    }
-  });
-}
-
-// Immediate players init on DOMContentLoaded
-document.addEventListener("DOMContentLoaded", function () {
-  initBunnyPlayerBackgroundAll("immediate");
+  if (!document.querySelector("[data-load-wrap]")) {
+    initBunnyPlayerBackground();
+    initBunnyPlayerSimple();
+  }
 });
 
 document.addEventListener("loaderComplete", function () {
-  initBunnyPlayerBackgroundAll("loader");
-});
-// Fallback: if loader is absent (e.g. Webflow preview), init after DOM ready
-document.addEventListener("DOMContentLoaded", function () {
-  var wrap = document.querySelector("[data-load-wrap]");
-  if (!wrap) initBunnyPlayerBackgroundAll("loader");
+  initBunnyPlayerBackground();
+  initBunnyPlayerSimple();
 });
 
 // =============================================================================
@@ -296,7 +249,6 @@ function initBunnyPlayerSimple() {
       var video = player.querySelector("video");
       if (!video) return;
 
-      // Clean up existing video source
       try {
         video.pause();
       } catch (_) {}
@@ -342,7 +294,7 @@ function initBunnyPlayerSimple() {
 
       // Load video source
       var isAttached = false;
-      var lastPauseBy = ""; // 'io' | 'manual' | ''
+      var lastPauseBy = "";
 
       function attachVideo() {
         if (isAttached) return;
@@ -351,7 +303,6 @@ function initBunnyPlayerSimple() {
         video.src = src;
       }
 
-      // Initialize based on lazy mode
       if (!isLazy) {
         attachVideo();
       }
@@ -448,23 +399,11 @@ function initBunnyPlayerSimple() {
       }
     });
 
-  // Helper: safe programmatic play
   function safePlay(video) {
     var p = video.play();
     if (p && typeof p.then === "function") p.catch(function () {});
   }
 }
-
-// Initialize Bunny Simple MP4 Player (Background) — after loader finishes
-document.addEventListener("loaderComplete", function () {
-  initBunnyPlayerSimple();
-});
-// Fallback: if loader is absent (e.g. Webflow preview), init after DOM ready
-document.addEventListener("DOMContentLoaded", function () {
-  var wrap = document.querySelector("[data-load-wrap]");
-  if (!wrap) initBunnyPlayerSimple();
-});
-
 
 // =============================================================================
 // SERVICE LABEL TAGS
