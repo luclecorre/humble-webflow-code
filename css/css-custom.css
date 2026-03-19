@@ -134,6 +134,13 @@
   object-position: center;
 }
 
+/* CMS dynamic background image — prevent tiling, force cover */
+.cms-project {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
 /* Mobile: grid-2-col and grid-3-col stack to single column 
 @media (max-width: 767px) {
   .cms-project-grid.grid-2-col,

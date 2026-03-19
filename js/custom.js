@@ -241,12 +241,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Initialize Bunny HTML HLS Player (Background)
+// Initialize Bunny HTML HLS Player (Background) — after loader finishes
+document.addEventListener("loaderComplete", function () {
+  initBunnyPlayerBackground();
+});
+// Fallback: if loader is absent (e.g. Webflow preview), init after DOM ready
 document.addEventListener("DOMContentLoaded", function () {
-  // Delay initialization to allow loader to complete (2000ms)
-  setTimeout(function() {
-    initBunnyPlayerBackground();
-  }, 2000);
+  var wrap = document.querySelector("[data-load-wrap]");
+  if (!wrap) initBunnyPlayerBackground();
 });
 
 // =============================================================================
