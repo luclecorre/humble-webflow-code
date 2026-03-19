@@ -119,6 +119,30 @@
   backface-visibility: hidden;
 }
 
+/* Image wrapper - default auto ratio */
+.image-wrapper-cms {
+  aspect-ratio: auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Image - default cover */
+.image-cms {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Mobile: grid-2-col and grid-3-col stack to single column 
+@media (max-width: 767px) {
+  .cms-project-grid.grid-2-col,
+  .cms-project-grid.grid-3-col {
+    grid-template-columns: 1fr;
+  }
+}*/
+
+
 /* ------------------------- Bunny Background Video (HLS & Simple MP4) -------------------------  */
 
 /* Animation */
@@ -161,21 +185,36 @@
   visibility: visible;
 }
 
-/* Image mode */
+/* Bunny image mode */
 .bunny-bg__image {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+}
+
+/* Hide image once a video is playing/paused */
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__image,
+[data-bunny-background-init][data-player-status="paused"] .bunny-bg__image {
   display: none;
 }
 
-[data-bunny-background-init][data-player-type="image"][data-player-status="ready"] .bunny-bg__image {
-  display: block;
+/* Video element: always in flow for video items; hidden only in image-only mode */
+[data-bunny-background-init][data-player-type="image"] .bunny-bg__video {
+  display: none;
 }
 
-[data-bunny-background-init][data-player-type="image"][data-player-status="ready"] .bunny-bg__placeholder {
+/* Fade video in once it starts playing */
+.bunny-bg__video {
+  transition: opacity 0.4s ease;
+}
+
+[data-bunny-background-init][data-player-status="idle"] .bunny-bg__video,
+[data-bunny-background-init][data-player-status="ready"] .bunny-bg__video,
+[data-bunny-background-init][data-player-status="loading"] .bunny-bg__video {
   opacity: 0;
-  visibility: hidden;
+}
+
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__video,
+[data-bunny-background-init][data-player-status="paused"] .bunny-bg__video {
+  opacity: 1;
 }

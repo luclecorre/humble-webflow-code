@@ -21,6 +21,13 @@ function initBunnyPlayerBackground() {
       var video = player.querySelector("video");
       if (!video) return;
 
+      // Set Bunny auto-generated thumbnail as poster so something shows immediately
+      // Bunny thumbnail URL is derived from the HLS URL: replace playlist.m3u8 with thumbnail.jpg
+      if (!video.getAttribute("poster")) {
+        var thumbnailSrc = src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg");
+        video.setAttribute("poster", thumbnailSrc);
+      }
+
       try {
         video.pause();
       } catch (_) {}
