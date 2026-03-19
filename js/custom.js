@@ -7,7 +7,16 @@ function initBunnyPlayerBackground() {
     .querySelectorAll("[data-bunny-background-init]")
     .forEach(function (player) {
       var src = player.getAttribute("data-player-src");
-      if (!src) return;
+
+      // Image-only mode: no Bunny video src but a .bunny-bg__image with a src exists
+      if (!src) {
+        var img = player.querySelector("img.bunny-bg__image");
+        if (img && img.getAttribute("src")) {
+          player.setAttribute("data-player-type", "image");
+          player.setAttribute("data-player-status", "ready");
+        }
+        return;
+      }
 
       var video = player.querySelector("video");
       if (!video) return;

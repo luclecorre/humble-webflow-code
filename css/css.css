@@ -269,15 +269,24 @@ button:disabled {
 }
 
 /* Margin Trim */
-:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim) ~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim)),
-:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim) ~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim)).u-display-contents > :first-child {
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"],[class*="u-columns"]) > :not(:not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim) ~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim)),
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"],[class*="u-columns"]) > :not(:not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim) ~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim)).u-display-contents > :first-child {
   margin-top: 0;
 }
 
-:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:has(~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim))),
-:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"]) > :not(:has(~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim))).u-display-contents > :last-child {
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"],[class*="u-columns"]) > :not(:has(~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim))),
+:is(.u-margin-trim,.w-richtext,.u-content-wrapper,[class*="u-container"],[class*="u-layout-column"],[class*="u-columns"]) > :not(:has(~ :not(.w-condition-invisible,.u-cover-absolute,.u-ignore-trim))).u-display-contents > :last-child {
   margin-bottom: 0;
 }
+
+/* Multi-Column Text Flow */
+[class*="u-columns"] {
+  column-gap: inherit;
+}
+
+.u-columns-2 { column-count: 2; }
+.u-columns-3 { column-count: 3; }
+.u-columns-4 { column-count: 4; }
 
 /* Line Clamp */
 [class*="u-line-clamp"]:not(.w-richtext),

@@ -160,3 +160,22 @@
   opacity: 1;
   visibility: visible;
 }
+
+/* Image mode */
+.bunny-bg__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+[data-bunny-background-init][data-player-type="image"][data-player-status="ready"] .bunny-bg__image {
+  display: block;
+}
+
+[data-bunny-background-init][data-player-type="image"][data-player-status="ready"] .bunny-bg__placeholder {
+  opacity: 0;
+  visibility: hidden;
+}
