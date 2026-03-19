@@ -215,6 +215,14 @@ function initBunnyPlayerBackground() {
   }
 }
 
+var _playersInitialized = false;
+function _initPlayers() {
+  if (_playersInitialized) return;
+  _playersInitialized = true;
+  initBunnyPlayerBackground();
+  initBunnyPlayerSimple();
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
     var src = player.getAttribute("data-player-src");
@@ -224,15 +232,25 @@ document.addEventListener("DOMContentLoaded", function () {
     video.setAttribute("poster", src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg"));
   });
 
-  if (!document.querySelector("[data-load-wrap]")) {
-    initBunnyPlayerBackground();
-    initBunnyPlayerSimple();
+  var wrap = document.querySelector("[data-load-wrap]");
+  if (!wrap) {
+    _initPlayers();
+  } else {
+    // Watch for the loader being hidden (set by GSAP at end of preloader animation).
+    // This is a fallback for when the loaderComplete event is never dispatched
+    // (e.g. stale gsap-animations.js on CDN missing the .call() dispatch).
+    var mo = new MutationObserver(function () {
+      if (wrap.style.display === "none") {
+        mo.disconnect();
+        _initPlayers();
+      }
+    });
+    mo.observe(wrap, { attributes: true, attributeFilter: ["style"] });
   }
 });
 
 document.addEventListener("loaderComplete", function () {
-  initBunnyPlayerBackground();
-  initBunnyPlayerSimple();
+  _initPlayers();
 });
 
 // =============================================================================

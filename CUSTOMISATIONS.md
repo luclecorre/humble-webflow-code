@@ -145,7 +145,7 @@ A full-featured HLS video background player:
 - **Lazy loading** (`data-player-lazy="true"`): Media is not attached until the player enters the viewport or the user interacts.
 - **Autoplay** (`data-player-autoplay="true"`): Forces muted + loop; IntersectionObserver (10% threshold) plays/pauses as the element enters/leaves the viewport.
 - **Controls**: Delegated click handler on `[data-player-control]` — supports `play`, `pause`, `playpause`, `mute` control types.
-- **Initialisation**: All players initialise on the `loaderComplete` event. Posters are set earlier on `DOMContentLoaded`. If no `[data-load-wrap]` is present (e.g. Webflow preview), players initialise on `DOMContentLoaded`.
+- **Initialisation**: All players initialise via `_initPlayers()` (guarded by `_playersInitialized` flag to prevent double-init). Triggered by: (1) `loaderComplete` event, (2) `MutationObserver` on `[data-load-wrap]` watching for `style.display === "none"` (fallback if `loaderComplete` is never dispatched — e.g. stale CDN copy of `gsap-animations.js`), or (3) directly on `DOMContentLoaded` if no `[data-load-wrap]` is present. Posters are set on `DOMContentLoaded` regardless.
 - **Status attribute** (`data-player-status`): `idle` → `ready` → `loading` → `playing` / `paused`.
 
 ### Bunny Simple MP4 Background Player
