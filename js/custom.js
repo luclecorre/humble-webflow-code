@@ -8,25 +8,10 @@ function initBunnyPlayerBackground() {
     .forEach(function (player) {
       var src = player.getAttribute("data-player-src");
 
-      // Image-only mode: no Bunny video src but a .bunny-bg__image with a src exists
-      if (!src) {
-        var img = player.querySelector("img.bunny-bg__image");
-        if (img && img.getAttribute("src")) {
-          player.setAttribute("data-player-type", "image");
-          player.setAttribute("data-player-status", "ready");
-        }
-        return;
-      }
+      if (!src) return;
 
       var video = player.querySelector("video");
       if (!video) return;
-
-      // Set Bunny auto-generated thumbnail as poster so something shows immediately
-      // Bunny thumbnail URL is derived from the HLS URL: replace playlist.m3u8 with thumbnail.jpg
-      if (!video.getAttribute("poster")) {
-        var thumbnailSrc = src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg");
-        video.setAttribute("poster", thumbnailSrc);
-      }
 
       try {
         video.pause();
@@ -242,6 +227,19 @@ function initBunnyPlayerBackground() {
     if (p && typeof p.then === "function") p.catch(function () {});
   }
 }
+
+// Set posters immediately on DOMContentLoaded (no delay) so something is
+// visible as soon as the element enters the viewport during scroll
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
+    var src = player.getAttribute("data-player-src");
+    if (!src) return;
+    var video = player.querySelector("video");
+    if (!video || video.getAttribute("poster")) return;
+    var thumbnailSrc = src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg");
+    video.setAttribute("poster", thumbnailSrc);
+  });
+});
 
 // Initialize Bunny HTML HLS Player (Background)
 document.addEventListener("DOMContentLoaded", function () {

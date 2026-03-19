@@ -198,22 +198,6 @@
   display: none;
 }
 
-/* Video element: always in flow for video items; hidden only in image-only mode */
-[data-bunny-background-init][data-player-type="image"] .bunny-bg__video {
-  display: none;
-}
-
-/* Fade video in once it starts playing */
-.bunny-bg__video {
-  transition: opacity 0.4s ease;
-}
-
-[data-bunny-background-init][data-player-status="idle"] .bunny-bg__video,
-[data-bunny-background-init][data-player-status="ready"] .bunny-bg__video,
-[data-bunny-background-init][data-player-status="loading"] .bunny-bg__video {
-  opacity: 0;
-}
-
 [data-bunny-background-init][data-player-status="playing"] .bunny-bg__video,
 [data-bunny-background-init][data-player-status="paused"] .bunny-bg__video {
   opacity: 1;
