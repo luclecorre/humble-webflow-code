@@ -424,12 +424,14 @@ function initBunnyPlayerSimple() {
   }
 }
 
-// Initialize Bunny Simple MP4 Player (Background)
+// Initialize Bunny Simple MP4 Player (Background) — after loader finishes
+document.addEventListener("loaderComplete", function () {
+  initBunnyPlayerSimple();
+});
+// Fallback: if loader is absent (e.g. Webflow preview), init after DOM ready
 document.addEventListener("DOMContentLoaded", function () {
-  // Delay initialization to allow loader to complete (2000ms)
-  setTimeout(function() {
-    initBunnyPlayerSimple();
-  }, 2000);
+  var wrap = document.querySelector("[data-load-wrap]");
+  if (!wrap) initBunnyPlayerSimple();
 });
 
 
