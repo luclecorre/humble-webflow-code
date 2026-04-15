@@ -224,6 +224,8 @@ function _initPlayers() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Poster auto-generation temporarily disabled for thumbnail testing
+  /*
   document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
     var src = player.getAttribute("data-player-src");
     if (!src) return;
@@ -231,6 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!video || video.getAttribute("poster")) return;
     video.setAttribute("poster", src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg"));
   });
+  */
 
   var wrap = document.querySelector("[data-load-wrap]");
   if (!wrap) {
