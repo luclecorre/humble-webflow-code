@@ -224,6 +224,10 @@ function _initPlayers() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  if (document.querySelector("[data-load-wrap]")) {
+    document.body.style.overflow = "hidden";
+  }
+
   document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
     var src = player.getAttribute("data-player-src");
     if (!src) return;
@@ -242,6 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var mo = new MutationObserver(function () {
       if (wrap.style.display === "none") {
         mo.disconnect();
+        document.body.style.overflow = "";
         _initPlayers();
       }
     });
@@ -250,6 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("loaderComplete", function () {
+  document.body.style.overflow = "";
   _initPlayers();
 });
 
