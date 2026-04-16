@@ -231,29 +231,34 @@ document.addEventListener("DOMContentLoaded", function () {
   var BUNNY_LIBRARY_ID = "543476";
   var BUNNY_READONLY_KEY = "0f09a733-fe45-44a2-ac7195856aca-a7b9-4d8a";
 
-  document.querySelectorAll("[data-bunny-background-init]").forEach(function (player) {
+  var players = Array.from(document.querySelectorAll("[data-bunny-background-init]")).filter(function (player) {
     var src = player.getAttribute("data-player-src");
-    if (!src) return;
     var video = player.querySelector("video");
-    if (!video || video.getAttribute("poster")) return;
-
-    var match = src.match(/b-cdn\.net\/([a-f0-9\-]+)\/playlist/);
-    var baseUrl = src.replace(/playlist\.m3u8([^]*)?$/, "");
-
-    if (match) {
-      var videoId = match[1];
-      fetch("https://video.bunnycdn.com/library/" + BUNNY_LIBRARY_ID + "/videos/" + videoId, {
-        headers: { AccessKey: BUNNY_READONLY_KEY }
-      }).then(function (res) { return res.json(); }).then(function (data) {
-        var fileName = data.thumbnailFileName || "thumbnail.jpg";
-        video.setAttribute("poster", baseUrl + fileName);
-      }).catch(function () {
-        video.setAttribute("poster", baseUrl + "thumbnail.jpg");
-      });
-    } else {
-      video.setAttribute("poster", baseUrl + "thumbnail.jpg");
-    }
+    return src && video && !video.getAttribute("poster");
   });
+
+  if (players.length) {
+    fetch("https://video.bunnycdn.com/library/" + BUNNY_LIBRARY_ID + "/videos?itemsPerPage=100", {
+      headers: { AccessKey: BUNNY_READONLY_KEY }
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      var map = {};
+      (data.items || []).forEach(function (item) { map[item.guid] = item.thumbnailFileName; });
+      players.forEach(function (player) {
+        var src = player.getAttribute("data-player-src");
+        var video = player.querySelector("video");
+        var match = src.match(/b-cdn\.net\/([a-f0-9\-]+)\/playlist/);
+        var baseUrl = src.replace(/playlist\.m3u8([^]*)?$/, "");
+        var fileName = (match && map[match[1]]) || "thumbnail.jpg";
+        video.setAttribute("poster", baseUrl + fileName);
+      });
+    }).catch(function () {
+      players.forEach(function (player) {
+        var src = player.getAttribute("data-player-src");
+        var video = player.querySelector("video");
+        video.setAttribute("poster", src.replace(/playlist\.m3u8([^]*)?$/, "thumbnail.jpg"));
+      });
+    });
+  }
 
   var wrap = document.querySelector("[data-load-wrap]");
   if (!wrap) {
