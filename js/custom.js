@@ -28,7 +28,8 @@ function initBunnyPlayerBackground() {
       function setActivated(v) {
         player.setAttribute("data-player-activated", v ? "true" : "false");
       }
-      if (!player.hasAttribute("data-player-activated")) setActivated(false);
+      setActivated(false);
+      setStatus("idle");
 
       // Flags
       var lazyMode = player.getAttribute("data-player-lazy");
@@ -220,7 +221,6 @@ function _initPlayers() {
   if (_playersInitialized) return;
   _playersInitialized = true;
   initBunnyPlayerBackground();
-  initBunnyPlayerSimple();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -282,176 +282,6 @@ document.addEventListener("loaderComplete", function () {
   document.body.style.overflow = "";
   _initPlayers();
 });
-
-// =============================================================================
-// BUNNY BACKGROUND VIDEO (SIMPLE MP4)
-// =============================================================================
-
-function initBunnyPlayerSimple() {
-  document
-    .querySelectorAll("[data-bunny-simple-init]")
-    .forEach(function (player) {
-      var src = player.getAttribute("data-player-src");
-      if (!src) return;
-
-      var video = player.querySelector("video");
-      if (!video) return;
-
-      try {
-        video.pause();
-      } catch (_) {}
-      try {
-        video.removeAttribute("src");
-        video.load();
-      } catch (_) {}
-
-      // Attribute helpers
-      function setStatus(s) {
-        if (player.getAttribute("data-player-status") !== s) {
-          player.setAttribute("data-player-status", s);
-        }
-      }
-      function setActivated(v) {
-        player.setAttribute("data-player-activated", v ? "true" : "false");
-      }
-      if (!player.hasAttribute("data-player-activated")) setActivated(false);
-      if (!player.hasAttribute("data-player-status")) setStatus("idle");
-
-      // Configuration flags
-      var lazyMode = player.getAttribute("data-player-lazy");
-      var isLazy = lazyMode === "true";
-      var autoplay = player.getAttribute("data-player-autoplay") === "true";
-      var initialMuted = player.getAttribute("data-player-muted") === "true";
-
-      // Autoplay forces muted + loop
-      if (autoplay) {
-        video.muted = true;
-        video.loop = true;
-      } else {
-        video.muted = initialMuted;
-      }
-
-      // Video attributes
-      video.setAttribute("muted", "");
-      video.setAttribute("playsinline", "");
-      video.setAttribute("webkit-playsinline", "");
-      video.playsInline = true;
-      if (typeof video.disableRemotePlayback !== "undefined")
-        video.disableRemotePlayback = true;
-      if (autoplay) video.autoplay = false;
-
-      // Load video source
-      var isAttached = false;
-      var lastPauseBy = "";
-
-      function attachVideo() {
-        if (isAttached) return;
-        isAttached = true;
-        video.preload = isLazy ? "none" : "auto";
-        video.src = src;
-      }
-
-      if (!isLazy) {
-        attachVideo();
-      }
-
-      // Toggle play/pause
-      function togglePlay() {
-        if (video.paused || video.ended) {
-          if (isLazy && !isAttached) attachVideo();
-          lastPauseBy = "";
-          setStatus("loading");
-          safePlay(video);
-        } else {
-          lastPauseBy = "manual";
-          video.pause();
-        }
-      }
-
-      // Toggle mute
-      function toggleMute() {
-        video.muted = !video.muted;
-        player.setAttribute(
-          "data-player-muted",
-          video.muted ? "true" : "false"
-        );
-      }
-
-      // Controls (delegated)
-      player.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-player-control]");
-        if (!btn || !player.contains(btn)) return;
-        var type = btn.getAttribute("data-player-control");
-        if (type === "play" || type === "pause" || type === "playpause")
-          togglePlay();
-        else if (type === "mute") toggleMute();
-      });
-
-      // Media event listeners
-      video.addEventListener("play", function () {
-        setActivated(true);
-        setStatus("playing");
-      });
-      video.addEventListener("playing", function () {
-        setStatus("playing");
-      });
-      video.addEventListener("pause", function () {
-        setStatus("paused");
-      });
-      video.addEventListener("waiting", function () {
-        setStatus("loading");
-      });
-      video.addEventListener("canplay", function () {
-        if (player.getAttribute("data-player-activated") !== "true") {
-          setStatus("ready");
-        }
-      });
-      video.addEventListener("ended", function () {
-        setStatus("paused");
-        setActivated(false);
-      });
-
-      // IntersectionObserver for autoplay
-      if (autoplay) {
-        if (player._io) {
-          try {
-            player._io.disconnect();
-          } catch (_) {}
-        }
-        var io = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (entry) {
-              var inView = entry.isIntersecting && entry.intersectionRatio > 0;
-              if (inView) {
-                if (isLazy && !isAttached) attachVideo();
-                if (
-                  lastPauseBy === "io" ||
-                  (video.paused && lastPauseBy !== "manual")
-                ) {
-                  setStatus("loading");
-                  safePlay(video);
-                  lastPauseBy = "";
-                }
-              } else {
-                if (!video.paused && !video.ended) {
-                  lastPauseBy = "io";
-                  video.pause();
-                }
-              }
-            });
-          },
-          { threshold: 0.1 }
-        );
-        io.observe(player);
-        player._io = io;
-      }
-    });
-
-  function safePlay(video) {
-    var p = video.play();
-    if (p && typeof p.then === "function") p.catch(function () {});
-  }
-}
 
 // =============================================================================
 // SERVICE LABEL TAGS
