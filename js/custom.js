@@ -220,6 +220,8 @@ function _initPlayers() {
 document.addEventListener("DOMContentLoaded", function () {
   if (document.querySelector("[data-load-wrap]")) {
     document.body.style.overflow = "hidden";
+    // Stop Lenis smooth scroll during preloader (overflow:hidden doesn't affect it)
+    if (window.lenis) window.lenis.stop();
   }
 
   var BUNNY_LIBRARY_ID = "543476";
@@ -265,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (wrap.style.display === "none") {
         mo.disconnect();
         document.body.style.overflow = "";
+        if (window.lenis) window.lenis.start();
         _initPlayers();
       }
     });
@@ -274,6 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 document.addEventListener("loaderComplete", function () {
   document.body.style.overflow = "";
+  if (window.lenis) window.lenis.start();
   _initPlayers();
 });
 

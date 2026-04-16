@@ -1,3 +1,8 @@
+/* Reserve scrollbar gutter to prevent layout shift when overflow:hidden is toggled during preloader */
+body {
+  scrollbar-gutter: stable;
+}
+
 /* Preloader */
 .wf-design-mode .loader {
   display: none;
