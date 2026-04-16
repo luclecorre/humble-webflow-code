@@ -85,13 +85,7 @@ function initBunnyPlayerBackground() {
           hls.on(Hls.Events.MEDIA_ATTACHED, function () {
             hls.loadSource(src);
           });
-          hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-            if (data && data.levels && data.levels.length) {
-              var level1080 = data.levels.findIndex(function(level) {
-                return level.height === 1080;
-              });
-              hls.startLevel = level1080 !== -1 ? level1080 : data.levels.length - 1;
-            }
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
             readyIfIdle(player, pendingPlay);
           });
           player._hls = hls;
