@@ -483,7 +483,7 @@ function initHeroParallax() {
 
   if (heroImage) {
     gsap.to(heroImage, {
-      yPercent: 30,
+      yPercent: 15,
       ease: "none",
       scrollTrigger: {
         trigger: hero,
