@@ -165,12 +165,18 @@ html::-webkit-scrollbar {
 
 /* ------------------------- Bunny Background Video (HLS & Simple MP4) -------------------------  */
 
-/* Bunny image mode / pre-play thumbnail overlay.
-   When a CMS thumbnail is bound to .bunny-bg__image it sits on top of the
-   video and fades out once the first frame is on screen (playing event).
-   Absolute + inset:0 fills the parent regardless of Webflow's layout settings;
-   object-fit:cover matches the video's own cover scaling. */
+/* Image-only mode (no video src): stays in document flow and drives the
+   container height naturally. */
 .bunny-bg__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Thumbnail overlay mode: only when a video is also set.
+   Taken out of flow and pinned to fill the parent so it overlays the video,
+   then fades out once the first frame is on screen (playing event). */
+[data-bunny-background-init]:not([data-player-src=""]) .bunny-bg__image {
   position: absolute;
   inset: 0;
   width: 100%;
