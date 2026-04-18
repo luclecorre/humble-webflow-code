@@ -127,6 +127,10 @@ State-driven visibility via `data-player-status` and `data-player-activated` att
 
 All transitions on placeholder and loading indicator: `opacity 0.3s linear, visibility 0.3s linear`.
 
+**Video element sizing**: `.bunny-bg__video` is set to `display: block; width: 100%; height: 100%; object-fit: cover; background: transparent`. Without explicit `width`/`height`/`object-fit`, Safari uses the video's intrinsic pixel dimensions and leaves a black gap beside the video when the container uses `aspect-ratio`.
+
+**Player container sizing**: `[data-bunny-background-init]` and `[data-bunny-simple-init]` are set to `width: 100%; aspect-ratio: 16 / 9; max-height: 95dvh; max-width: calc(95dvh * (16 / 9)); overflow: hidden`. The `max-width` mirrors the height cap so both axes are constrained at the correct ratio — `max-height` alone does not prevent the element from becoming wider than the 16:9 ratio on tall viewports.
+
 **Image mode**: `.bunny-bg__image` is `display: block; width: 100%; height: auto` by default. It is hidden (via Webflow conditional visibility) when no CMS image is set, and hidden via CSS once the video reaches `playing` or `paused` state. The `<video>` element is hidden by Webflow conditional visibility when no video src is set.
 
 ---
@@ -147,6 +151,7 @@ A full-featured HLS video background player:
 - **Controls**: Delegated click handler on `[data-player-control]` — supports `play`, `pause`, `playpause`, `mute` control types.
 - **Initialisation**: All players initialise via `_initPlayers()` (guarded by `_playersInitialized` flag to prevent double-init). Triggered by: (1) `loaderComplete` event, (2) `MutationObserver` on `[data-load-wrap]` watching for `style.display === "none"` (fallback if `loaderComplete` is never dispatched — e.g. stale CDN copy of `gsap-animations.js`), or (3) directly on `DOMContentLoaded` if no `[data-load-wrap]` is present. Posters are set on `DOMContentLoaded` regardless.
 - **Status attribute** (`data-player-status`): `idle` → `ready` → `loading` → `playing` / `paused`.
+- **Safari black flash fix**: Status is set to `"playing"` only on the `playing` event (first frame decoded), not the `play` event (which fires before any frame is visible on Safari). This prevents the placeholder fading out before the video is on screen.
 
 ### Bunny Simple MP4 Background Player
 **Function:** `initBunnyPlayerSimple()`  

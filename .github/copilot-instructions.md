@@ -67,6 +67,11 @@ Two player types exist — keep them separate:
 
 Both share the same `data-player-status` state machine (`idle → ready → loading → playing / paused`) and the same CSS state hooks. When adding new player features, apply them to both players unless the feature is HLS-specific.
 
+**Safari-specific rules:**
+- Always set `.bunny-bg__video { width: 100%; height: 100%; object-fit: cover; background: transparent }`. Webflow sets `height: auto` on this element; with `height: auto` the element box only takes the video's intrinsic height instead of filling the absolutely-positioned `.bunny-bg` parent, leaving a black gap to the side on Safari.
+- Webflow manages `aspect-ratio: 16/9` and `max-height: 95dvh` on the `bunny-bg-video` container. The custom CSS adds only `max-width: calc(95dvh * (16/9))` — Webflow cannot express this value, and without it the container becomes wider than 16:9 on tall viewports when `max-height` is hit.
+- Set `data-player-status="playing"` only on the `playing` event, never on `play`. On Safari the `play` event fires before the first frame is decoded; setting status on `play` causes the thumbnail placeholder to disappear while the video background is still black (300–500 ms black flash).
+
 ### Clipboard / Async APIs
 
 Always provide a fallback for `navigator.clipboard.writeText` using `document.execCommand("copy")` via a temporary `<textarea>` for older browser support.

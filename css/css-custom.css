@@ -17,6 +17,11 @@ html::-webkit-scrollbar {
 
 [data-load-reset]{ opacity: 0; }
 
+[data-load-progress] {
+  height: 2px;
+  background-color: #e9fe00;
+}
+
 /* Current page state */
 .navbar-link.w--current .navbar-dot.is-menu {
   background-color: var(--ui--navbar-dot-active);
@@ -160,57 +165,26 @@ html::-webkit-scrollbar {
 
 /* ------------------------- Bunny Background Video (HLS & Simple MP4) -------------------------  */
 
-/* Animation */
-[data-bunny-background-init] :is(.bunny-bg__placeholder, .bunny-bg__loading),
-[data-bunny-simple-init] :is(.bunny-bg__placeholder, .bunny-bg__loading) {
-  transition: opacity 0.3s linear, visibility 0.3s linear;
-}
-
-/* Placeholder - Hide when playing/paused/ready */
-[data-bunny-background-init][data-player-status="playing"] .bunny-bg__placeholder,
-[data-bunny-background-init][data-player-status="paused"] .bunny-bg__placeholder,
-[data-bunny-background-init][data-player-activated="true"][data-player-status="ready"] .bunny-bg__placeholder,
-[data-bunny-simple-init][data-player-status="playing"] .bunny-bg__placeholder,
-[data-bunny-simple-init][data-player-status="paused"] .bunny-bg__placeholder,
-[data-bunny-simple-init][data-player-activated="true"][data-player-status="ready"] .bunny-bg__placeholder {
-  opacity: 0;
-  visibility: hidden;
-}
-
-/* Play/Pause Icons - Hide play icon when playing/loading */
-[data-bunny-background-init][data-player-status="playing"] .bunny-bg__play-svg,
-[data-bunny-background-init][data-player-status="loading"] .bunny-bg__play-svg,
-[data-bunny-simple-init][data-player-status="playing"] .bunny-bg__play-svg,
-[data-bunny-simple-init][data-player-status="loading"] .bunny-bg__play-svg {
-  display: none;
-}
-
-/* Play/Pause Icons - Show pause icon when playing/loading */
-[data-bunny-background-init][data-player-status="playing"] .bunny-bg__pause-svg,
-[data-bunny-background-init][data-player-status="loading"] .bunny-bg__pause-svg,
-[data-bunny-simple-init][data-player-status="playing"] .bunny-bg__pause-svg,
-[data-bunny-simple-init][data-player-status="loading"] .bunny-bg__pause-svg {
-  display: block;
-}
-
-/* Loading Indicator */
-[data-bunny-background-init][data-player-status="loading"] .bunny-bg__loading,
-[data-bunny-simple-init][data-player-status="loading"] .bunny-bg__loading {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* Bunny image mode */
+/* Bunny image mode / pre-play thumbnail overlay.
+   When a CMS thumbnail is bound to .bunny-bg__image it sits on top of the
+   video and fades out once the first frame is on screen (playing event).
+   Absolute + inset:0 fills the parent regardless of Webflow's layout settings;
+   object-fit:cover matches the video's own cover scaling. */
 .bunny-bg__image {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.15s linear, visibility 0.15s linear;
 }
 
-/* Hide image once a video is playing/paused */
+/* Fade out once video is playing or paused (paused = has played at least once) */
 [data-bunny-background-init][data-player-status="playing"] .bunny-bg__image,
 [data-bunny-background-init][data-player-status="paused"] .bunny-bg__image {
-  display: none;
+  opacity: 0;
+  visibility: hidden;
 }
 
 [data-bunny-background-init][data-player-status="playing"] .bunny-bg__video,
