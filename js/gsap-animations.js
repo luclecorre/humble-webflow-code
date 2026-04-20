@@ -20,16 +20,16 @@ function initLogoRevealLoader(){
   const loadTimeline = gsap.timeline({
     defaults: {
       ease: "loader",
-      duration: 2
+      duration: 1
     }
   })
   .set(wrap, { display: "block" })
   .to(progressBar, { scaleX: 1 })
   .to(logo, { clipPath: "inset(0% 0% 0% 0%)" }, "<")
-  .to(container, { autoAlpha: 0, duration: 0.5 })
+  .to(container, { autoAlpha: 0, duration: 0.3 })
   .set(progressBar, { autoAlpha: 0 })
   .add("hideContent")
-  .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
+  .to(bg, { yPercent: -101, duration: 0.6 }, "hideContent")
   .set(wrap, { display: "none" })
   .call(function () { document.dispatchEvent(new CustomEvent("loaderComplete")); });
 

@@ -185,3 +185,25 @@ if (window.location.hostname.includes('canvas.webflow.com')) {
     loader.style.display = 'none';
   }
 }
+
+// =============================================================================
+// WEBP ANIMATION FIX
+// Webflow's responsive image treatment adds srcset/sizes to all <img> elements,
+// which causes browsers to select a static resized variant instead of playing
+// the original animated WebP. This removes those attributes when the src ends
+// in .webp so the browser always loads the original file.
+// =============================================================================
+
+(function initWebpAnimationFix() {
+  function fixWebpImages() {
+    document.querySelectorAll('img[srcset], img[sizes]').forEach(function (img) {
+      var src = img.getAttribute('src') || '';
+      if (src.toLowerCase().endsWith('.webp')) {
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', fixWebpImages);
+}());
