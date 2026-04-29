@@ -1,0 +1,261 @@
+/* Hide native scrollbar (Lenis handles scrolling) */
+html {
+  scrollbar-width: none; /* Firefox */
+}
+html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+/* Preloader */
+.wf-design-mode .loader {
+  display: none;
+}
+
+.wf-design-mode .loader.show-in-designer {
+  display: block !important;
+}
+
+[data-load-reset]{ opacity: 0; }
+
+[data-load-progress] {
+  height: 2px;
+  background-color: #e9fe00;
+}
+
+/* Current page state */
+.navbar-link.w--current .navbar-dot.is-menu {
+  background-color: var(--ui--navbar-dot-active);
+}
+
+/* Hover states */
+.navbar-link:hover .navbar-dot.is-menu,
+.navbar-menu-button:hover .navbar-dot.is-menu {
+  background-color: var(--ui--navbar-dot-active);
+}
+
+/* Smooth colour transition */
+.navbar-dot.is-menu {
+  transition: background-color 0.3s ease;
+}
+
+
+/* ------------------------- Underline Link [https://osmo.supply/] -------------------------  */
+
+[data-underline-link] {
+  text-decoration: none;
+  position: relative;
+}
+
+[data-underline-link]::before {
+  content: "";
+  position: absolute;
+  bottom: -0.2rem;
+  left: 0;
+  width: 100%;
+  height: 0.075rem;
+  background-color: currentColor;
+  transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+  transform-origin: right;
+  transform: scaleX(0) rotate(0.001deg);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-hover]:hover [data-underline-link]::before,
+  [data-underline-link]:hover::before {
+    transform-origin: left;
+    transform: scaleX(1) rotate(0.001deg);
+  }  
+}
+
+/* ------------------------- Stagger Button -------------------------  */
+
+/* Characters */
+.btn-animate-chars [data-button-animate-chars] {
+  overflow: hidden;
+  position: relative;
+  display: inline-block;
+}
+
+.btn-animate-chars [data-button-animate-chars] span {
+  display: inline-block;
+  position: relative;
+  text-shadow: 0px 1.3em currentColor;
+  transform: translateY(0em) rotate(0.001deg);
+  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.btn-animate-chars:hover [data-button-animate-chars] span {
+  transform: translateY(-1.3em) rotate(0.001deg);
+}
+
+/* Icon rotation animation */
+.btn-plus-icon {
+  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.btn-animate-chars:hover .btn-plus-icon {
+  transform: rotate(90deg);
+}
+
+/* ------------------------- Parallax Hero -------------------------  */
+
+[data-hero-parallax] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  overflow: hidden;
+}
+
+[data-hero-parallax-image] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  height: 115%;
+  position: absolute;
+  inset: 0;
+  top: -7.5%;
+}
+
+/* ------------------------- Parallax Footer -------------------------  */
+
+[data-footer-parallax] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+[data-footer-parallax-inner] {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Image wrapper - default auto ratio */
+.image-wrapper-cms {
+  aspect-ratio: auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Image - default cover */
+.image-cms {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* CMS dynamic background image — prevent tiling, force cover */
+.cms-project {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Mobile: grid-2-col and grid-3-col stack to single column 
+@media (max-width: 767px) {
+  .cms-project-grid.grid-2-col,
+  .cms-project-grid.grid-3-col {
+    grid-template-columns: 1fr;
+  }
+}*/
+
+
+/* ------------------------- Bunny Background Video (HLS & Simple MP4) -------------------------  */
+
+/* Placeholder overlays the video and fades out once the first frame is on
+   screen. Webflow handles positioning in the canvas; the absolute pin here
+   ensures it fills the parent correctly at runtime. */
+[data-bunny-background-init] .bunny-bg__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.15s linear, visibility 0.15s linear;
+}
+
+/* Fade out once video is playing or paused (paused = has played at least once) */
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__placeholder,
+[data-bunny-background-init][data-player-status="paused"] .bunny-bg__placeholder {
+  opacity: 0;
+  visibility: hidden;
+}
+
+[data-bunny-background-init][data-player-status="playing"] .bunny-bg__video,
+[data-bunny-background-init][data-player-status="paused"] .bunny-bg__video {
+  opacity: 1;
+}
+
+
+
+
+/* ------------------------- Bunny Player CSS -------------------------  */
+
+
+
+/* Animation */
+[data-bunny-player-init] :is(.bunny-player__placeholder, .bunny-player__dark, .bunny-player__playpause, .bunny-player__loading) {
+  transition: opacity 0.3s linear, visibility 0.3s linear;
+}
+
+/* Placeholder */
+[data-bunny-player-init][data-player-status="playing"] .bunny-player__placeholder,
+[data-bunny-player-init][data-player-status="paused"] .bunny-player__placeholder,
+[data-bunny-player-init][data-player-activated="true"][data-player-status="ready"] .bunny-player__placeholder {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Dark Overlay */
+[data-bunny-player-init][data-player-status="paused"] .bunny-player__dark,
+[data-bunny-player-init][data-player-status="playing"][data-player-hover="active"] .bunny-player__dark{
+  opacity: 0.3;
+}
+
+[data-bunny-player-init][data-player-status="playing"] .bunny-player__dark {
+  opacity: 0;
+}
+
+/* Play/Pause */
+[data-bunny-player-init][data-player-status="playing"] .bunny-player__playpause,
+[data-bunny-player-init][data-player-status="loading"] .bunny-player__playpause {
+  opacity: 0;
+}
+
+[data-bunny-player-init][data-player-status="playing"][data-player-hover="active"] .bunny-player__playpause {
+  opacity: 1;
+}
+
+[data-bunny-player-init][data-player-status="playing"] .bunny-player__play-svg,
+[data-bunny-player-init][data-player-status="loading"] .bunny-player__play-svg {
+  display: none;
+}
+
+[data-bunny-player-init][data-player-status="playing"] .bunny-player__pause-svg,
+[data-bunny-player-init][data-player-status="loading"] .bunny-player__pause-svg{
+  display: block;
+}
+
+/* Loading */
+[data-bunny-player-init][data-player-status="loading"] .bunny-player__loading {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Cover Mode */
+[data-bunny-player-init][data-player-update-size="cover"] {
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+
+[data-bunny-player-init][data-player-update-size="cover"] [data-player-before] {
+  display: none;
+}
+
+[data-bunny-player-init][data-player-update-size="cover"][data-player-fullscreen="false"] .bunny-player__video {
+  object-fit: cover;
+}
