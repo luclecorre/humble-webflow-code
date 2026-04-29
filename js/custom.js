@@ -1,64 +1,6 @@
 // =============================================================================
-// SERVICE LABEL TAGS
+// BUNNY BACKGROUND VIDEO
 // =============================================================================
-
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.portfolio-tag-item').forEach(item => {
-    const label = item.querySelector('.service-label');
-    if (!label) return;
-    
-    const text = label.textContent.trim().toUpperCase();
-    
-    switch(text) {
-      case 'CREATIVE':
-        item.style.borderRadius = '0.2em';
-        break;
-      case 'MARKETING':
-        item.style.padding = '0 0.2em';
-        item.style.borderRadius = '2em';
-        break;
-      case 'STRATEGY':
-        item.style.borderRadius = '0';
-        break;
-      case 'WEBSITE':
-        item.style.borderRadius = '0.4em';
-        break;
-    }
-  });
-});
-
-// =============================================================================
-// Hide loader in Preview mode
-// =============================================================================
-
-if (window.location.hostname.includes('canvas.webflow.com')) {
-  const loader = document.querySelector('.loader');
-  if (loader) {
-    loader.style.display = 'none';
-  }
-}
-
-// =============================================================================
-// WEBP ANIMATION FIX
-// Webflow's responsive image treatment adds srcset/sizes to all <img> elements,
-// which causes browsers to select a static resized variant instead of playing
-// the original animated WebP. This removes those attributes when the src ends
-// in .webp so the browser always loads the original file.
-// =============================================================================
-
-(function initWebpAnimationFix() {
-  function fixWebpImages() {
-    document.querySelectorAll('img[srcset], img[sizes]').forEach(function (img) {
-      var src = img.getAttribute('src') || '';
-      if (src.toLowerCase().endsWith('.webp')) {
-        img.removeAttribute('srcset');
-        img.removeAttribute('sizes');
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', fixWebpImages);
-}());
 
 function initBunnyPlayerBackground() {
   document.querySelectorAll('[data-bunny-background-init]').forEach(function(player) {
@@ -224,6 +166,9 @@ document.addEventListener('DOMContentLoaded', function() {
   initBunnyPlayerBackground();
 });
 
+// =============================================================================
+// BUNNY PLAYER
+// =============================================================================
 
 function initBunnyPlayerBasic() {
   document.querySelectorAll('[data-bunny-player-init]').forEach(function(player) {
@@ -538,3 +483,65 @@ function initBunnyPlayerBasic() {
 document.addEventListener('DOMContentLoaded', function() {
   initBunnyPlayerBasic();
 });
+
+// =============================================================================
+// SERVICE LABEL TAGS
+// =============================================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.portfolio-tag-item').forEach(item => {
+    const label = item.querySelector('.service-label');
+    if (!label) return;
+    
+    const text = label.textContent.trim().toUpperCase();
+    
+    switch(text) {
+      case 'CREATIVE':
+        item.style.borderRadius = '0.2em';
+        break;
+      case 'MARKETING':
+        item.style.padding = '0 0.2em';
+        item.style.borderRadius = '2em';
+        break;
+      case 'STRATEGY':
+        item.style.borderRadius = '0';
+        break;
+      case 'WEBSITE':
+        item.style.borderRadius = '0.4em';
+        break;
+    }
+  });
+});
+
+// =============================================================================
+// Hide loader in Preview mode
+// =============================================================================
+
+if (window.location.hostname.includes('canvas.webflow.com')) {
+  const loader = document.querySelector('.loader');
+  if (loader) {
+    loader.style.display = 'none';
+  }
+}
+
+// =============================================================================
+// WEBP ANIMATION FIX
+// Webflow's responsive image treatment adds srcset/sizes to all <img> elements,
+// which causes browsers to select a static resized variant instead of playing
+// the original animated WebP. This removes those attributes when the src ends
+// in .webp so the browser always loads the original file.
+// =============================================================================
+
+(function initWebpAnimationFix() {
+  function fixWebpImages() {
+    document.querySelectorAll('img[srcset], img[sizes]').forEach(function (img) {
+      var src = img.getAttribute('src') || '';
+      if (src.toLowerCase().endsWith('.webp')) {
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', fixWebpImages);
+}());

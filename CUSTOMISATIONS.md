@@ -121,14 +121,21 @@ State-driven visibility via `data-player-status` and `data-player-activated` att
 | State | Effect |
 |---|---|
 | `playing` or `paused` | `.bunny-bg__placeholder` fades out (`opacity: 0; visibility: hidden`) |
+| `playing` or `loading` | `.bunny-bg__play-svg` hidden; `.bunny-bg__pause-svg` shown |
+| `loading` | `.bunny-bg__loading` visible |
+| `playing` or `paused` | `.bunny-bg__image` hidden (image shown by default; hidden once video is active) |
 
-All transitions on placeholder: `opacity 0.15s linear, visibility 0.15s linear`.
+All transitions on placeholder and loading indicator: `opacity 0.3s linear, visibility 0.3s linear`.
 
 **Video element sizing**: `.bunny-bg__video` is set to `display: block; width: 100%; height: 100%; object-fit: cover; background: transparent`. Without explicit `width`/`height`/`object-fit`, Safari uses the video's intrinsic pixel dimensions and leaves a black gap beside the video when the container uses `aspect-ratio`.
 
 **Player container sizing**: `[data-bunny-background-init]` and `[data-bunny-simple-init]` are set to `width: 100%; aspect-ratio: 16 / 9; max-height: 95dvh; max-width: calc(95dvh * (16 / 9)); overflow: hidden`. The `max-width` mirrors the height cap so both axes are constrained at the correct ratio — `max-height` alone does not prevent the element from becoming wider than the 16:9 ratio on tall viewports.
 
-**Overlay element**: `.bunny-bg__placeholder` is used on all pages. CSS pins it to fill the parent (`position: absolute; inset: 0; width: 100%; height: 100%`) so it overlays the video until playback begins, then fades out on `playing` or `paused` status. `transition: opacity 0.15s linear, visibility 0.15s linear`.
+**Overlay elements**: Two variants are used across pages — both fade out on `playing` or `paused` status:
+- `.bunny-bg__image` (CMS project pages): a Webflow CMS-bound `<img>`. Default `display: block; width: 100%; height: auto`. When a video src is also set, CSS repositions it (`position: absolute; inset: 0`) to overlay the video.
+- `.bunny-bg__placeholder` (homepage): a static design-time element. CSS pins it to fill the parent (`position: absolute; inset: 0`) so it overlays the video until playback begins.
+
+Both use `transition: opacity 0.15s linear, visibility 0.15s linear` for the fade.
 
 ---
 
@@ -141,7 +148,8 @@ All transitions on placeholder: `opacity 0.15s linear, visibility 0.15s linear`.
 A full-featured HLS video background player:
 - **HLS support**: Uses `hls.js` where available; falls back to native HLS on Safari. Falls back to direct `video.src` assignment if neither is available.
 - **Quality selection**: On HLS manifest parse, prefers 1080p level; falls back to highest available.
-- **Placeholder**: `.bunny-bg__placeholder` overlays the video and fades out once the first frame is on screen. CSS pins it to fill the parent at runtime; Webflow handles design-time positioning.
+- **Thumbnail poster**: Automatically derives a `thumbnail.jpg` URL from the `.m3u8` source and sets it as the video `poster` on `DOMContentLoaded` (before player init) so something is visible immediately on scroll.
+- **Image mode**: If the player contains an `img.bunny-bg__image` with a src (bound via Webflow CMS) and `data-player-src` is empty, the image is shown and all video logic is skipped. Show/hide of the `<video>` and `<img>` elements for empty fields is handled by Webflow conditional visibility.
 - **Lazy loading** (`data-player-lazy="true"`): Media is not attached until the player enters the viewport or the user interacts.
 - **Autoplay** (`data-player-autoplay="true"`): Loop is enabled when autoplay is on; IntersectionObserver (10% threshold) plays/pauses as the element enters/leaves the viewport.
 - **Always muted**: `video.muted = true` is set unconditionally (not gated on `autoplay`) because background videos must always be muted regardless of autoplay state.
