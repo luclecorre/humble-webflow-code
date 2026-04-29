@@ -121,17 +121,14 @@ State-driven visibility via `data-player-status` and `data-player-activated` att
 | State | Effect |
 |---|---|
 | `playing` or `paused` | `.bunny-bg__placeholder` fades out (`opacity: 0; visibility: hidden`) |
-| `playing` or `loading` | `.bunny-bg__play-svg` hidden; `.bunny-bg__pause-svg` shown |
-| `loading` | `.bunny-bg__loading` visible |
-| `playing` or `paused` | `.bunny-bg__image` hidden (image shown by default; hidden once video is active) |
 
-All transitions on placeholder and loading indicator: `opacity 0.3s linear, visibility 0.3s linear`.
+All transitions on placeholder: `opacity 0.15s linear, visibility 0.15s linear`.
 
 **Video element sizing**: `.bunny-bg__video` is set to `display: block; width: 100%; height: 100%; object-fit: cover; background: transparent`. Without explicit `width`/`height`/`object-fit`, Safari uses the video's intrinsic pixel dimensions and leaves a black gap beside the video when the container uses `aspect-ratio`.
 
 **Player container sizing**: `[data-bunny-background-init]` and `[data-bunny-simple-init]` are set to `width: 100%; aspect-ratio: 16 / 9; max-height: 95dvh; max-width: calc(95dvh * (16 / 9)); overflow: hidden`. The `max-width` mirrors the height cap so both axes are constrained at the correct ratio — `max-height` alone does not prevent the element from becoming wider than the 16:9 ratio on tall viewports.
 
-**Image mode**: `.bunny-bg__image` is `display: block; width: 100%; height: auto` by default. It is hidden (via Webflow conditional visibility) when no CMS image is set, and hidden via CSS once the video reaches `playing` or `paused` state. The `<video>` element is hidden by Webflow conditional visibility when no video src is set.
+**Overlay element**: `.bunny-bg__placeholder` is used on all pages. CSS pins it to fill the parent (`position: absolute; inset: 0; width: 100%; height: 100%`) so it overlays the video until playback begins, then fades out on `playing` or `paused` status. `transition: opacity 0.15s linear, visibility 0.15s linear`.
 
 ---
 
@@ -144,14 +141,28 @@ All transitions on placeholder and loading indicator: `opacity 0.3s linear, visi
 A full-featured HLS video background player:
 - **HLS support**: Uses `hls.js` where available; falls back to native HLS on Safari. Falls back to direct `video.src` assignment if neither is available.
 - **Quality selection**: On HLS manifest parse, prefers 1080p level; falls back to highest available.
-- **Thumbnail poster**: Automatically derives a `thumbnail.jpg` URL from the `.m3u8` source and sets it as the video `poster` on `DOMContentLoaded` (before player init) so something is visible immediately on scroll.
-- **Image mode**: If the player contains an `img.bunny-bg__image` with a src (bound via Webflow CMS) and `data-player-src` is empty, the image is shown and all video logic is skipped. Show/hide of the `<video>` and `<img>` elements for empty fields is handled by Webflow conditional visibility.
+- **Placeholder**: `.bunny-bg__placeholder` overlays the video and fades out once the first frame is on screen. CSS pins it to fill the parent at runtime; Webflow handles design-time positioning.
 - **Lazy loading** (`data-player-lazy="true"`): Media is not attached until the player enters the viewport or the user interacts.
-- **Autoplay** (`data-player-autoplay="true"`): Forces muted + loop; IntersectionObserver (10% threshold) plays/pauses as the element enters/leaves the viewport.
-- **Controls**: Delegated click handler on `[data-player-control]` — supports `play`, `pause`, `playpause`, `mute` control types.
+- **Autoplay** (`data-player-autoplay="true"`): Loop is enabled when autoplay is on; IntersectionObserver (10% threshold) plays/pauses as the element enters/leaves the viewport.
+- **Always muted**: `video.muted = true` is set unconditionally (not gated on `autoplay`) because background videos must always be muted regardless of autoplay state.
 - **Initialisation**: All players initialise via `_initPlayers()` (guarded by `_playersInitialized` flag to prevent double-init). Triggered by: (1) `loaderComplete` event, (2) `MutationObserver` on `[data-load-wrap]` watching for `style.display === "none"` (fallback if `loaderComplete` is never dispatched — e.g. stale CDN copy of `gsap-animations.js`), or (3) directly on `DOMContentLoaded` if no `[data-load-wrap]` is present. Posters are set on `DOMContentLoaded` regardless.
-- **Status attribute** (`data-player-status`): `idle` → `ready` → `loading` → `playing` / `paused`.
+- **Status attribute** (`data-player-status`): `idle` → `loading` → `playing` / `paused`. Status is set to `"loading"` immediately before `safePlay()` is called (IO in-view trigger) and also on the `waiting` event (re-buffering).
 - **Safari black flash fix**: Status is set to `"playing"` only on the `playing` event (first frame decoded), not the `play` event (which fires before any frame is visible on Safari). This prevents the placeholder fading out before the video is on screen.
+
+### Bunny HLS Basic Video Player
+**Function:** `initBunnyPlayerBasic()`  
+**File:** `js/bunny-player.js`  
+**Trigger attribute:** `[data-bunny-player-init]`
+
+Feature-rich HLS player for standard fixed 16:9 video blocks:
+- **HLS support**: Same `hls.js` / Safari native HLS / MP4 fallback chain as the background player.
+- **Default autoplay + muted**: `data-player-autoplay` defaults to `true` (opt-out with `data-player-autoplay="false"`). `video.muted` mirrors the autoplay flag. Initial `data-player-muted` attribute is written on init so CSS mute indicators have a correct starting state.
+- **Lazy loading**: Supports `data-player-lazy="true"` (no attach until in-view) and `data-player-lazy="meta"` (fetch metadata only, attach on play).
+- **Aspect ratio**: Optional `data-player-update-size="true"` reads video dimensions from HLS manifest or metadata and sets `[data-player-before]` `padding-top` as an intrinsic ratio spacer.
+- **Controls**: Delegated click handler on `[data-player-control]` — supports `play`, `pause`, `playpause`, `mute` control types.
+- **Manual vs IO pause**: `lastPauseBy` flag distinguishes `'io'` (viewport-driven) from `'manual'` (user) pauses; IO will not auto-resume a manually paused video.
+- **Status attribute** (`data-player-status`): `idle` → `ready` → `loading` → `playing` / `paused`.
+- **Safari black flash fix**: `setStatus('playing')` is called only on the `playing` event, never on `play`. `setActivated(true)` is still set on `play` (safe — records user intent before first frame).
 
 ### Bunny Simple MP4 Background Player
 **Function:** `initBunnyPlayerSimple()`  

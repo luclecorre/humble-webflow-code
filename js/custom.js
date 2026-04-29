@@ -21,10 +21,10 @@ function initBunnyPlayerBackground() {
 
     var autoplay = player.getAttribute("data-player-autoplay") === "true";
     var isLazyTrue = player.getAttribute("data-player-lazy") === "true";
-    var lastPauseBy = "";
 
+    // Background videos are always muted; loop only when autoplay is on.
+    video.muted = true;
     if (autoplay) {
-      video.muted = true;
       video.loop = true;
       video.autoplay = false;
     }
@@ -72,6 +72,7 @@ function initBunnyPlayerBackground() {
     // black flash where "play" fires 300–500ms before the first frame renders.
     video.addEventListener("playing", function () { setStatus("playing"); });
     video.addEventListener("pause",   function () { setStatus("paused"); });
+    video.addEventListener("waiting", function () { setStatus("loading"); });
 
     if (autoplay) {
       if (player._io) {
@@ -82,13 +83,12 @@ function initBunnyPlayerBackground() {
           var inView = entry.isIntersecting && entry.intersectionRatio > 0;
           if (inView) {
             if (isLazyTrue && !isAttached) attachMediaOnce();
-            if (lastPauseBy === "io" || (video.paused && lastPauseBy !== "manual")) {
-              lastPauseBy = "";
+            if (video.paused) {
+              setStatus("loading");
               safePlay(video);
             }
           } else {
             if (!video.paused && !video.ended) {
-              lastPauseBy = "io";
               video.pause();
             }
           }
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (window.lenis) window.lenis.stop();
   }
 
-  // Thumbnail is handled by .bunny-bg__image bound in Webflow CMS — no JS poster fetch needed.
+  // Thumbnail/placeholder is handled by .bunny-bg__placeholder in Webflow — no JS poster fetch needed.
 
   // Init players immediately so the video starts buffering during the preloader.
   // By the time the loader clears, the video is already playing underneath it.

@@ -60,12 +60,13 @@ JS behaviour is driven by `data-*` attributes, not class names. Class names are 
 
 ### Video Players
 
-Two player types exist — keep them separate:
+Three player types exist — keep them separate by use case:
 
-- **HLS player** (`[data-bunny-background-init]`): uses `hls.js` with Safari native HLS fallback. Prefers 1080p quality level.
+- **Background HLS player** (`[data-bunny-background-init]`, `js/custom.js`): hero/background sections. Always muted (`video.muted = true` unconditionally). Loop gated on `data-player-autoplay`. No user controls — `lastPauseBy` tracking and manual-pause branches do not exist here. IntersectionObserver drives play/pause.
+- **Basic HLS player** (`[data-bunny-player-init]`, `js/bunny-player.js`): standard 16:9 video blocks. Defaults to autoplay + muted (`data-player-autoplay` absent = `true`; opt-out with `="false"`). Has full user controls, manual-vs-IO pause tracking, lazy-meta mode, and aspect-ratio spacer support.
 - **Simple MP4 player** (`[data-bunny-simple-init]`): sets `video.src` directly.
 
-Both share the same `data-player-status` state machine (`idle → ready → loading → playing / paused`) and the same CSS state hooks. When adding new player features, apply them to both players unless the feature is HLS-specific.
+Both HLS players share the same `data-player-status` state machine (`idle → ready → loading → playing / paused`) and the same CSS state hooks. When adding new player features, mirror them across both HLS players unless the feature is specific to one use case.
 
 **Safari-specific rules:**
 - Always set `.bunny-bg__video { width: 100%; height: 100%; object-fit: cover; background: transparent }`. Webflow sets `height: auto` on this element; with `height: auto` the element box only takes the video's intrinsic height instead of filling the absolutely-positioned `.bunny-bg` parent, leaving a black gap to the side on Safari.
