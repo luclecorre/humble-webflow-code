@@ -163,62 +163,32 @@ html::-webkit-scrollbar {
 }*/
 
 
-/* ------------------------- Bunny Background Video (HLS & Simple MP4) -------------------------  */
+/* ------------------------- Bunny Background Video -------------------------  */
 
-/* Image-only mode (no video src): stays in document flow and drives the
-   container height naturally. */
-.bunny-bg__image {
-  display: block;
-  width: 100%;
-  height: auto;
+  /* Animation */
+[data-bunny-background-init] :is(.bunny-bg__placeholder, .bunny-bg__loading) {
+  transition: opacity 0.3s linear, visibility 0.3s linear;
 }
 
-/* Thumbnail overlay mode: only when a video is also set.
-   Taken out of flow and pinned to fill the parent so it overlays the video,
-   then fades out once the first frame is on screen (playing event). */
-[data-bunny-background-init]:not([data-player-src=""]) .bunny-bg__image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transition: opacity 0.15s linear, visibility 0.15s linear;
-}
-
-/* Static design-time placeholder (homepage): always overlays the video.
-   Webflow may handle positioning; transition is what matters here. */
-[data-bunny-background-init] .bunny-bg__placeholder {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transition: opacity 0.15s linear, visibility 0.15s linear;
-}
-
-/* Fade out once video is playing or paused (paused = has played at least once) */
-[data-bunny-background-init][data-player-status="playing"] .bunny-bg__image,
-[data-bunny-background-init][data-player-status="paused"] .bunny-bg__image,
+/* Placeholder */
 [data-bunny-background-init][data-player-status="playing"] .bunny-bg__placeholder,
-[data-bunny-background-init][data-player-status="paused"] .bunny-bg__placeholder {
+[data-bunny-background-init][data-player-status="paused"] .bunny-bg__placeholder,
+[data-bunny-background-init][data-player-activated="true"][data-player-status="ready"] .bunny-bg__placeholder {
   opacity: 0;
   visibility: hidden;
 }
 
-[data-bunny-background-init][data-player-status="playing"] .bunny-bg__video,
-[data-bunny-background-init][data-player-status="paused"] .bunny-bg__video {
+/* Loading */
+[data-bunny-background-init][data-player-status="loading"] .bunny-bg__loading {
   opacity: 1;
+  visibility: visible;
 }
 
 
-
-
-/* ------------------------- Bunny Player CSS -------------------------  */
-
-
+/* ------------------------- Bunny Player Video -------------------------  */
 
 /* Animation */
-[data-bunny-player-init] :is(.bunny-player__placeholder, .bunny-player__dark, .bunny-player__playpause, .bunny-player__loading) {
+[data-bunny-player-init] :is(.bunny-player__placeholder, .bunny-player__loading) {
   transition: opacity 0.3s linear, visibility 0.3s linear;
 }
 
@@ -228,36 +198,6 @@ html::-webkit-scrollbar {
 [data-bunny-player-init][data-player-activated="true"][data-player-status="ready"] .bunny-player__placeholder {
   opacity: 0;
   visibility: hidden;
-}
-
-/* Dark Overlay */
-[data-bunny-player-init][data-player-status="paused"] .bunny-player__dark,
-[data-bunny-player-init][data-player-status="playing"][data-player-hover="active"] .bunny-player__dark{
-  opacity: 0.3;
-}
-
-[data-bunny-player-init][data-player-status="playing"] .bunny-player__dark {
-  opacity: 0;
-}
-
-/* Play/Pause */
-[data-bunny-player-init][data-player-status="playing"] .bunny-player__playpause,
-[data-bunny-player-init][data-player-status="loading"] .bunny-player__playpause {
-  opacity: 0;
-}
-
-[data-bunny-player-init][data-player-status="playing"][data-player-hover="active"] .bunny-player__playpause {
-  opacity: 1;
-}
-
-[data-bunny-player-init][data-player-status="playing"] .bunny-player__play-svg,
-[data-bunny-player-init][data-player-status="loading"] .bunny-player__play-svg {
-  display: none;
-}
-
-[data-bunny-player-init][data-player-status="playing"] .bunny-player__pause-svg,
-[data-bunny-player-init][data-player-status="loading"] .bunny-player__pause-svg{
-  display: block;
 }
 
 /* Loading */

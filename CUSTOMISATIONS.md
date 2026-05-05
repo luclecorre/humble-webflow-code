@@ -1,6 +1,6 @@
 # Webflow Customisations Reference
 
-> Last updated: 19 March 2026  
+> Last updated: 29 April 2026  
 > Files: `css/css.css`, `css/css-custom.css`, `js/custom.js`, `js/gsap-animations.js`
 
 ---
@@ -121,9 +121,7 @@ State-driven visibility via `data-player-status` and `data-player-activated` att
 | State | Effect |
 |---|---|
 | `playing` or `paused` | `.bunny-bg__placeholder` fades out (`opacity: 0; visibility: hidden`) |
-| `playing` or `loading` | `.bunny-bg__play-svg` hidden; `.bunny-bg__pause-svg` shown |
 | `loading` | `.bunny-bg__loading` visible |
-| `playing` or `paused` | `.bunny-bg__image` hidden (image shown by default; hidden once video is active) |
 
 All transitions on placeholder and loading indicator: `opacity 0.3s linear, visibility 0.3s linear`.
 
@@ -143,43 +141,30 @@ Both use `transition: opacity 0.15s linear, visibility 0.15s linear` for the fad
 
 ### Bunny HLS Background Video Player
 **Function:** `initBunnyPlayerBackground()`  
+**File:** `js/custom.js`  
 **Trigger attribute:** `[data-bunny-background-init]`
 
-A full-featured HLS video background player:
-- **HLS support**: Uses `hls.js` where available; falls back to native HLS on Safari. Falls back to direct `video.src` assignment if neither is available.
-- **Quality selection**: On HLS manifest parse, prefers 1080p level; falls back to highest available.
-- **Thumbnail poster**: Automatically derives a `thumbnail.jpg` URL from the `.m3u8` source and sets it as the video `poster` on `DOMContentLoaded` (before player init) so something is visible immediately on scroll.
-- **Image mode**: If the player contains an `img.bunny-bg__image` with a src (bound via Webflow CMS) and `data-player-src` is empty, the image is shown and all video logic is skipped. Show/hide of the `<video>` and `<img>` elements for empty fields is handled by Webflow conditional visibility.
-- **Lazy loading** (`data-player-lazy="true"`): Media is not attached until the player enters the viewport or the user interacts.
-- **Autoplay** (`data-player-autoplay="true"`): Loop is enabled when autoplay is on; IntersectionObserver (10% threshold) plays/pauses as the element enters/leaves the viewport.
-- **Always muted**: `video.muted = true` is set unconditionally (not gated on `autoplay`) because background videos must always be muted regardless of autoplay state.
-- **Initialisation**: All players initialise via `_initPlayers()` (guarded by `_playersInitialized` flag to prevent double-init). Triggered by: (1) `loaderComplete` event, (2) `MutationObserver` on `[data-load-wrap]` watching for `style.display === "none"` (fallback if `loaderComplete` is never dispatched — e.g. stale CDN copy of `gsap-animations.js`), or (3) directly on `DOMContentLoaded` if no `[data-load-wrap]` is present. Posters are set on `DOMContentLoaded` regardless.
-- **Status attribute** (`data-player-status`): `idle` → `loading` → `playing` / `paused`. Status is set to `"loading"` immediately before `safePlay()` is called (IO in-view trigger) and also on the `waiting` event (re-buffering).
-- **Safari black flash fix**: Status is set to `"playing"` only on the `playing` event (first frame decoded), not the `play` event (which fires before any frame is visible on Safari). This prevents the placeholder fading out before the video is on screen.
+HLS video background player:
+- **HLS support**: Uses `hls.js` where available; falls back to native HLS on Safari; falls back to direct `video.src` assignment if neither is available.
+- **Always autoplay, always muted**: `video.muted = true` and `video.loop = true` are set unconditionally. No user controls.
+- **Lazy loading** (`data-player-lazy="true"`): Media is not attached until the player enters the viewport.
+- **IntersectionObserver**: Plays when the element enters the viewport (10% threshold), pauses when it leaves.
+- **Initialisation**: Inits directly on `DOMContentLoaded`.
+- **Status attribute** (`data-player-status`): `idle` → `ready` → `loading` → `playing` / `paused`.
 
 ### Bunny HLS Basic Video Player
 **Function:** `initBunnyPlayerBasic()`  
-**File:** `js/bunny-player.js`  
+**File:** `js/custom.js`  
 **Trigger attribute:** `[data-bunny-player-init]`
 
-Feature-rich HLS player for standard fixed 16:9 video blocks:
+Feature-rich HLS player for standard video blocks:
 - **HLS support**: Same `hls.js` / Safari native HLS / MP4 fallback chain as the background player.
-- **Default autoplay + muted**: `data-player-autoplay` defaults to `true` (opt-out with `data-player-autoplay="false"`). `video.muted` mirrors the autoplay flag. Initial `data-player-muted` attribute is written on init so CSS mute indicators have a correct starting state.
+- **Always autoplay, always muted**: `autoplay` is hardcoded to `true`; `video.muted = true` and `video.loop = true` unconditionally. No user controls, no hover interaction.
 - **Lazy loading**: Supports `data-player-lazy="true"` (no attach until in-view) and `data-player-lazy="meta"` (fetch metadata only, attach on play).
 - **Aspect ratio**: Optional `data-player-update-size="true"` reads video dimensions from HLS manifest or metadata and sets `[data-player-before]` `padding-top` as an intrinsic ratio spacer.
-- **Controls**: Delegated click handler on `[data-player-control]` — supports `play`, `pause`, `playpause`, `mute` control types.
-- **Manual vs IO pause**: `lastPauseBy` flag distinguishes `'io'` (viewport-driven) from `'manual'` (user) pauses; IO will not auto-resume a manually paused video.
+- **IntersectionObserver**: Plays when in-view, pauses when out-of-view (10% threshold).
+- **Initialisation**: Inits directly on `DOMContentLoaded`.
 - **Status attribute** (`data-player-status`): `idle` → `ready` → `loading` → `playing` / `paused`.
-- **Safari black flash fix**: `setStatus('playing')` is called only on the `playing` event, never on `play`. `setActivated(true)` is still set on `play` (safe — records user intent before first frame).
-
-### Bunny Simple MP4 Background Player
-**Function:** `initBunnyPlayerSimple()`  
-**Trigger attribute:** `[data-bunny-simple-init]`
-
-Simplified version of the above for plain MP4 files (no HLS):
-- Same autoplay/lazy/controls/status pattern as the HLS player.
-- No `hls.js` dependency — sets `video.src` directly.
-- Initialises on `loaderComplete` (or `DOMContentLoaded` fallback).
 
 ### Service Label Tags
 **Trigger:** `.portfolio-tag-item` containing `.service-label`

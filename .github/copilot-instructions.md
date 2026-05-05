@@ -60,18 +60,16 @@ JS behaviour is driven by `data-*` attributes, not class names. Class names are 
 
 ### Video Players
 
-Three player types exist — keep them separate by use case:
+Two player types exist — both live in `js/custom.js` and both init on `DOMContentLoaded`:
 
-- **Background HLS player** (`[data-bunny-background-init]`, `js/custom.js`): hero/background sections. Always muted (`video.muted = true` unconditionally). Loop gated on `data-player-autoplay`. No user controls — `lastPauseBy` tracking and manual-pause branches do not exist here. IntersectionObserver drives play/pause.
-- **Basic HLS player** (`[data-bunny-player-init]`, `js/bunny-player.js`): standard 16:9 video blocks. Defaults to autoplay + muted (`data-player-autoplay` absent = `true`; opt-out with `="false"`). Has full user controls, manual-vs-IO pause tracking, lazy-meta mode, and aspect-ratio spacer support.
-- **Simple MP4 player** (`[data-bunny-simple-init]`): sets `video.src` directly.
+- **Background HLS player** (`[data-bunny-background-init]`, `js/custom.js`): hero/background sections. Always autoplay — forces `muted=true` and `loop=true`; no user controls. IntersectionObserver (10% threshold) drives play/pause. Supports `data-player-lazy="true"` (no media attach until in-view).
+- **Basic HLS player** (`[data-bunny-player-init]`, `js/custom.js`): standard video blocks. Always autoplay, always muted (`video.muted = true` and `video.loop = true` hardcoded). No user controls, no hover state. Supports `data-player-lazy="true"` / `"meta"`, `data-player-update-size="true"` / `"cover"` aspect-ratio spacer, and `getSourceMeta` utility for HLS manifest parsing.
 
-Both HLS players share the same `data-player-status` state machine (`idle → ready → loading → playing / paused`) and the same CSS state hooks. When adding new player features, mirror them across both HLS players unless the feature is specific to one use case.
+Both HLS players share the same `data-player-status` state machine (`idle → ready → loading → playing / paused`), the same `data-player-activated` flag, and the same CSS state hooks. Both use hls.js where available, fall back to native HLS on Safari, and fall back to direct `video.src` assignment otherwise. When adding new player features, mirror them across both unless the feature is specific to one use case.
 
 **Safari-specific rules:**
 - Always set `.bunny-bg__video { width: 100%; height: 100%; object-fit: cover; background: transparent }`. Webflow sets `height: auto` on this element; with `height: auto` the element box only takes the video's intrinsic height instead of filling the absolutely-positioned `.bunny-bg` parent, leaving a black gap to the side on Safari.
 - Webflow manages `aspect-ratio: 16/9` and `max-height: 95dvh` on the `bunny-bg-video` container. The custom CSS adds only `max-width: calc(95dvh * (16/9))` — Webflow cannot express this value, and without it the container becomes wider than 16:9 on tall viewports when `max-height` is hit.
-- Set `data-player-status="playing"` only on the `playing` event, never on `play`. On Safari the `play` event fires before the first frame is decoded; setting status on `play` causes the thumbnail placeholder to disappear while the video background is still black (300–500 ms black flash).
 
 ### Clipboard / Async APIs
 
