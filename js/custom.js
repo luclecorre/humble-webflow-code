@@ -405,6 +405,80 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // =============================================================================
+// READ MORE / READ LESS — mobile rich text truncation
+// Usage: add data-read-more="init" to any element wrapping a rich text block.
+// On screens ≤767px (landscape mobile), the rich text is clamped to 4 lines.
+// A READ MORE toggle is shown beneath it; clicking expands / collapses the text.
+// =============================================================================
+
+(function initReadMore() {
+  var BREAKPOINT = 767;
+
+  function isMobile() {
+    return window.innerWidth <= BREAKPOINT;
+  }
+
+  function buildToggle() {
+    var btn = document.createElement('button');
+    btn.setAttribute('data-read-more-toggle', '');
+    btn.type = 'button';
+    btn.textContent = 'READ MORE';
+    return btn;
+  }
+
+  function setup(wrapper) {
+    var rt = wrapper.querySelector('[data-read-more-content]') || wrapper.firstElementChild;
+    if (!rt) return;
+
+    var toggle = wrapper.querySelector('[data-read-more-toggle]');
+    if (!toggle) {
+      toggle = buildToggle();
+      wrapper.appendChild(toggle);
+    }
+
+    function applyCollapsed() {
+      if (isMobile()) {
+        rt.setAttribute('data-read-more-collapsed', '');
+        toggle.style.display = '';
+        toggle.textContent = 'READ MORE';
+        wrapper.removeAttribute('data-read-more-open');
+      } else {
+        rt.removeAttribute('data-read-more-collapsed');
+        toggle.style.display = 'none';
+        wrapper.removeAttribute('data-read-more-open');
+      }
+    }
+
+    toggle.addEventListener('click', function() {
+      var isOpen = wrapper.hasAttribute('data-read-more-open');
+      if (isOpen) {
+        wrapper.removeAttribute('data-read-more-open');
+        rt.setAttribute('data-read-more-collapsed', '');
+        toggle.textContent = 'READ MORE';
+      } else {
+        wrapper.setAttribute('data-read-more-open', '');
+        rt.removeAttribute('data-read-more-collapsed');
+        toggle.textContent = 'READ LESS';
+      }
+    });
+
+    applyCollapsed();
+    wrapper._readMoreCollapseFn = applyCollapsed;
+  }
+
+  function onResize() {
+    document.querySelectorAll('[data-read-more="init"]').forEach(function(wrapper) {
+      if (wrapper._readMoreCollapseFn) wrapper._readMoreCollapseFn();
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-read-more="init"]').forEach(setup);
+    window.addEventListener('resize', onResize);
+  });
+}());
+
+// =============================================================================
 // SERVICE LABEL TAGS
 // =============================================================================
 
