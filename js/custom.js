@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // =============================================================================
 // READ MORE / READ LESS — mobile rich text truncation
 // Usage: add data-read-more="init" to any element wrapping a rich text block.
-// On screens ≤767px (landscape mobile), the rich text is clamped to 4 lines.
+// On screens ≤767px, the rich text is clamped to 4 lines via max-height.
 // A READ MORE toggle is shown beneath it; clicking expands / collapses the text.
 // =============================================================================
 
@@ -419,15 +419,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function buildToggle() {
-    var btn = document.createElement('button');
-    btn.setAttribute('data-read-more-toggle', '');
-    btn.type = 'button';
-    btn.textContent = 'READ MORE';
-    return btn;
+    var a = document.createElement('a');
+    a.setAttribute('data-read-more-toggle', '');
+    a.setAttribute('role', 'button');
+    a.setAttribute('tabindex', '0');
+    a.textContent = 'Read More';
+    return a;
   }
 
   function setup(wrapper) {
-    var rt = wrapper.querySelector('[data-read-more-content]') || wrapper.firstElementChild;
+    // Target the first .w-richtext child, or any marked child, or the first child
+    var rt = wrapper.querySelector('.w-richtext') ||
+             wrapper.querySelector('[data-read-more-content]') ||
+             wrapper.firstElementChild;
     if (!rt) return;
 
     var toggle = wrapper.querySelector('[data-read-more-toggle]');
@@ -436,39 +440,62 @@ document.addEventListener('DOMContentLoaded', function() {
       wrapper.appendChild(toggle);
     }
 
+    function collapse() {
+      // -webkit-line-clamp is the only reliable way to clamp to exactly N visual lines
+      rt.style.display = '-webkit-box';
+      rt.style.webkitBoxOrient = 'vertical';
+      rt.style.webkitLineClamp = '4';
+      rt.style.overflow = 'hidden';
+      toggle.style.display = 'block';
+      toggle.textContent = 'Read More';
+      wrapper.removeAttribute('data-read-more-open');
+    }
+
+    function expand() {
+      rt.style.display = '';
+      rt.style.webkitBoxOrient = '';
+      rt.style.webkitLineClamp = '';
+      rt.style.overflow = '';
+      toggle.style.display = 'block';
+      toggle.textContent = 'Read Less';
+      wrapper.setAttribute('data-read-more-open', '');
+    }
+
     function applyCollapsed() {
       if (isMobile()) {
-        rt.setAttribute('data-read-more-collapsed', '');
-        toggle.style.display = 'inline';
-        toggle.textContent = 'READ MORE';
-        wrapper.removeAttribute('data-read-more-open');
+        collapse();
       } else {
-        rt.removeAttribute('data-read-more-collapsed');
+        rt.style.display = '';
+        rt.style.webkitBoxOrient = '';
+        rt.style.webkitLineClamp = '';
+        rt.style.overflow = '';
         toggle.style.display = 'none';
         wrapper.removeAttribute('data-read-more-open');
       }
     }
 
     toggle.addEventListener('click', function() {
-      var isOpen = wrapper.hasAttribute('data-read-more-open');
-      if (isOpen) {
-        wrapper.removeAttribute('data-read-more-open');
-        rt.setAttribute('data-read-more-collapsed', '');
-        toggle.textContent = 'READ MORE';
+      if (wrapper.hasAttribute('data-read-more-open')) {
+        collapse();
       } else {
-        wrapper.setAttribute('data-read-more-open', '');
-        rt.removeAttribute('data-read-more-collapsed');
-        toggle.textContent = 'READ LESS';
+        expand();
+      }
+    });
+
+    toggle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle.click();
       }
     });
 
     applyCollapsed();
-    wrapper._readMoreCollapseFn = applyCollapsed;
+    wrapper._readMoreApplyFn = applyCollapsed;
   }
 
   function onResize() {
     document.querySelectorAll('[data-read-more="init"]').forEach(function(wrapper) {
-      if (wrapper._readMoreCollapseFn) wrapper._readMoreCollapseFn();
+      if (wrapper._readMoreApplyFn) wrapper._readMoreApplyFn();
     });
   }
 
