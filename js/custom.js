@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyCollapsed() {
       if (isMobile()) {
         rt.setAttribute('data-read-more-collapsed', '');
-        toggle.style.display = '';
+        toggle.style.display = 'inline';
         toggle.textContent = 'READ MORE';
         wrapper.removeAttribute('data-read-more-open');
       } else {
