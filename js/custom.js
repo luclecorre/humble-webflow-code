@@ -428,11 +428,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function setup(wrapper) {
-    // Target the first .w-richtext child, or any marked child, or the first child
     var rt = wrapper.querySelector('.w-richtext') ||
              wrapper.querySelector('[data-read-more-content]') ||
              wrapper.firstElementChild;
     if (!rt) return;
+
+    // Only act if there is more than one block child to hide
+    var children = Array.prototype.slice.call(rt.children);
+    if (children.length <= 1) return;
 
     var toggle = wrapper.querySelector('[data-read-more-toggle]');
     if (!toggle) {
@@ -440,37 +443,57 @@ document.addEventListener('DOMContentLoaded', function() {
       wrapper.appendChild(toggle);
     }
 
+    // Hidden container that holds the overflow paragraphs
+    var overflow = rt.querySelector('.read-more__overflow');
+    if (!overflow) {
+      overflow = document.createElement('div');
+      overflow.className = 'read-more__overflow';
+      overflow.style.display = 'none';
+      rt.appendChild(overflow);
+    }
+
+    // Move paragraphs after the first into the hidden overflow div
     function collapse() {
-      // -webkit-line-clamp is the only reliable way to clamp to exactly N visual lines
-      rt.style.display = '-webkit-box';
-      rt.style.webkitBoxOrient = 'vertical';
-      rt.style.webkitLineClamp = '4';
-      rt.style.overflow = 'hidden';
+      if (overflow.children.length === 0) {
+        var siblings = Array.prototype.slice.call(rt.children).filter(function(c) {
+          return c !== overflow;
+        });
+        siblings.slice(1).forEach(function(c) {
+          overflow.appendChild(c);
+        });
+      }
+      overflow.style.display = 'none';
       toggle.style.display = 'block';
       toggle.textContent = 'Read More';
       wrapper.removeAttribute('data-read-more-open');
     }
 
+    // Move overflow paragraphs back into the rich text div
     function expand() {
-      rt.style.display = '';
-      rt.style.webkitBoxOrient = '';
-      rt.style.webkitLineClamp = '';
-      rt.style.overflow = '';
+      while (overflow.firstChild) {
+        rt.insertBefore(overflow.firstChild, overflow);
+      }
+      overflow.style.display = 'none';
       toggle.style.display = 'block';
       toggle.textContent = 'Read Less';
       wrapper.setAttribute('data-read-more-open', '');
+    }
+
+    // Restore all paragraphs to rt and hide the toggle (desktop)
+    function restore() {
+      while (overflow.firstChild) {
+        rt.insertBefore(overflow.firstChild, overflow);
+      }
+      overflow.style.display = 'none';
+      toggle.style.display = 'none';
+      wrapper.removeAttribute('data-read-more-open');
     }
 
     function applyCollapsed() {
       if (isMobile()) {
         collapse();
       } else {
-        rt.style.display = '';
-        rt.style.webkitBoxOrient = '';
-        rt.style.webkitLineClamp = '';
-        rt.style.overflow = '';
-        toggle.style.display = 'none';
-        wrapper.removeAttribute('data-read-more-open');
+        restore();
       }
     }
 
