@@ -541,17 +541,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     switch(text) {
       case 'CREATIVE':
-        item.style.borderRadius = '0.2em';
+        item.style.borderRadius = '0.4em';
         break;
       case 'MARKETING':
         item.style.padding = '0 0.2em';
         item.style.borderRadius = '2em';
         break;
       case 'STRATEGY':
-        item.style.borderRadius = '0';
+        item.style.borderRadius = '0.4em 0.1em 0.4em 0.1em';
         break;
-      case 'WEBSITE':
-        item.style.borderRadius = '0.4em';
+      case 'WEBSITES':
+        item.style.borderRadius = '0.2em';
         break;
     }
   });
