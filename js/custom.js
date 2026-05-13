@@ -541,6 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     switch(text) {
       case 'CREATIVE':
+        item.style.padding = '0 0.1em';
         item.style.borderRadius = '0.4em';
         break;
       case 'MARKETING':
