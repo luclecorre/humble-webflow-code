@@ -471,7 +471,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Move overflow paragraphs back into the rich text div
     function expand() {
       while (overflow.firstChild) {
-        rt.insertBefore(overflow.firstChild, overflow);
+        var el = overflow.firstChild;
+        rt.insertBefore(el, overflow);
+        // GSAP sets autoAlpha:0 (opacity+visibility) on these as its initial hidden
+        // state. If they were hidden when the ScrollTrigger fired they never got
+        // animated to visible, so clear those inline styles manually.
+        el.style.opacity = '';
+        el.style.visibility = '';
+        el.style.transform = '';
       }
       overflow.style.display = 'none';
       toggle.style.display = 'block';
@@ -482,7 +489,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Restore all paragraphs to rt and hide the toggle (desktop)
     function restore() {
       while (overflow.firstChild) {
-        rt.insertBefore(overflow.firstChild, overflow);
+        var el = overflow.firstChild;
+        rt.insertBefore(el, overflow);
+        el.style.opacity = '';
+        el.style.visibility = '';
+        el.style.transform = '';
       }
       overflow.style.display = 'none';
       toggle.style.display = 'none';
