@@ -480,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
         el.style.visibility = '';
         el.style.transform = '';
       }
-      overflow.style.display = 'none';
+      // overflow is now empty — no need to set display:none (already hidden)
       toggle.style.display = 'block';
       toggle.textContent = 'Read Less';
       wrapper.setAttribute('data-read-more-open', '');
@@ -502,7 +502,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function applyCollapsed() {
       if (isMobile()) {
-        collapse();
+        // Only collapse if the user hasn't explicitly opened it.
+        // On iOS Safari, layout changes after expand() can fire a resize event
+        // which would immediately re-collapse the content.
+        if (!wrapper.hasAttribute('data-read-more-open')) {
+          collapse();
+        }
       } else {
         restore();
       }
@@ -527,15 +532,30 @@ document.addEventListener('DOMContentLoaded', function() {
     wrapper._readMoreApplyFn = applyCollapsed;
   }
 
+  // Track the last known breakpoint state so we only act when it actually changes.
+  // On iOS, window.resize fires on every scroll as the browser chrome shows/hides
+  // (which doesn't change the width). Ignoring same-side resize events prevents
+  // unnecessary DOM work and eliminates any residual open/close flicker.
+  var _readMoreWasMobile = window.innerWidth <= BREAKPOINT;
+
   function onResize() {
+    var nowMobile = window.innerWidth <= BREAKPOINT;
+    if (nowMobile === _readMoreWasMobile) return;
+    _readMoreWasMobile = nowMobile;
     document.querySelectorAll('[data-read-more="init"]').forEach(function(wrapper) {
       if (wrapper._readMoreApplyFn) wrapper._readMoreApplyFn();
     });
   }
 
+  var _readMoreResizeTimer;
+  function onResizeDebounced() {
+    clearTimeout(_readMoreResizeTimer);
+    _readMoreResizeTimer = setTimeout(onResize, 150);
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('[data-read-more="init"]').forEach(setup);
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', onResizeDebounced);
   });
 }());
 
