@@ -775,6 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           document.querySelector('.logo-scroll-up').style.display = isScrollingDown ? 'none' : 'block';
           document.querySelector('.logo-scroll-down').style.display = isScrollingDown ? 'block' : 'none';
+          document.querySelector('.nav-links').style.display = isScrollingDown ? 'none' : 'flex';
 
           lastScrollY = currentScrollY;
         }
