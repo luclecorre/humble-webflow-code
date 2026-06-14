@@ -762,6 +762,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // =============================================================================
 // Homepage Nav Logo Scroll Show/Hide
 // =============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const logoUp = document.querySelector('.logo-scroll-up');
+  const logoDown = document.querySelector('.logo-scroll-down');
+  const navLinks = document.querySelector('.nav-links');
+
+  if (!logoUp || !logoDown || !navLinks) return;
+
   let lastScrollY = window.scrollY;
   let ticking = false;
 
@@ -772,11 +779,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (Math.abs(currentScrollY - lastScrollY) >= 5) {
           const isScrollingDown = currentScrollY > lastScrollY;
-
-          document.querySelector('.logo-scroll-up').style.display = isScrollingDown ? 'none' : 'block';
-          document.querySelector('.logo-scroll-down').style.display = isScrollingDown ? 'block' : 'none';
-          document.querySelector('.nav-links').style.display = isScrollingDown ? 'none' : 'flex';
-
+          logoUp.style.display = isScrollingDown ? 'none' : 'block';
+          logoDown.style.display = isScrollingDown ? 'block' : 'none';
+          navLinks.style.display = isScrollingDown ? 'none' : 'flex';
           lastScrollY = currentScrollY;
         }
 
@@ -786,6 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ticking = true;
     }
   });
+});
 
 // =============================================================================
 // Homepage CSS Marquee
