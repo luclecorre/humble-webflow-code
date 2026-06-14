@@ -588,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // CustomEase is already registered at the top of this file; just create the ease
   if (typeof CustomEase !== 'undefined') {
-    CustomEase.create("osmo", "M0,0 C0.625,0.05 0.7,1 1,1");
+    CustomEase.create("osmo", "M0,0 C0.625,0.05 0,1 1,1");
   }
   var EASE     = typeof CustomEase !== 'undefined' ? "osmo" : "power2.inOut";
   var DURATION = 0.2;
@@ -608,50 +608,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   var lastScrollY = window.scrollY;
   var ticking = false;
+  var isDown = false; // tracks current visual state, not scroll direction
 
   window.addEventListener('scroll', function () {
-    if (!ticking) {
-      requestAnimationFrame(function () {
-        var currentScrollY = window.scrollY;
-        var dy = getSwapY();
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () {
+      var currentScrollY = window.scrollY;
+      var dy = getSwapY();
+      var down = currentScrollY > lastScrollY;
+      lastScrollY = currentScrollY;
+      ticking = false;
 
-        if (Math.abs(currentScrollY - lastScrollY) >= 5) {
-          var down = currentScrollY > lastScrollY;
+      // Only animate when state actually changes
+      if (down === isDown) return;
+      isDown = down;
 
-          gsap.killTweensOf(logoUp);
-          gsap.killTweensOf(logoDown);
-          gsap.killTweensOf(navLinks);
+      gsap.killTweensOf(logoUp);
+      gsap.killTweensOf(logoDown);
+      gsap.killTweensOf(navLinks);
 
-          // Logo-up slides out the direction of scroll, logo-down slides in from opposite
-          gsap.to(logoUp, {
-            opacity: down ? 0 : 1,
-            y: down ? -dy : 0,
-            pointerEvents: down ? 'none' : 'auto',
-            duration: DURATION,
-            ease: EASE
-          });
-          gsap.to(logoDown, {
-            opacity: down ? 1 : 0,
-            y: down ? 0 : dy,
-            pointerEvents: down ? 'auto' : 'none',
-            duration: DURATION,
-            ease: EASE
-          });
-          gsap.to(navLinks, {
-            opacity: down ? 0 : 1,
-            pointerEvents: down ? 'none' : 'auto',
-            duration: DURATION,
-            ease: EASE
-          });
-
-          lastScrollY = currentScrollY;
-        }
-
-        ticking = false;
+      gsap.to(logoUp, {
+        opacity: down ? 0 : 1,
+        y: down ? -dy : 0,
+        pointerEvents: down ? 'none' : 'auto',
+        duration: DURATION,
+        ease: EASE
       });
-
-      ticking = true;
-    }
+      gsap.to(logoDown, {
+        opacity: down ? 1 : 0,
+        y: down ? 0 : dy,
+        pointerEvents: down ? 'auto' : 'none',
+        duration: DURATION,
+        ease: EASE
+      });
+      gsap.to(navLinks, {
+        opacity: down ? 0 : 1,
+        pointerEvents: down ? 'none' : 'auto',
+        duration: DURATION,
+        ease: EASE
+      });
+    });
   });
 });
 
