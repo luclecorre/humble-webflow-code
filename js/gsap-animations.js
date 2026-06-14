@@ -599,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (_) { canUseEase = false; }
   }
   var EASE  = canUseEase ? "osmo" : "power2.inOut";
-  var DURATION = 0.5;
+  var DURATION = 0.2;
 
   var lastScrollY = window.scrollY;
   var ticking = false;
