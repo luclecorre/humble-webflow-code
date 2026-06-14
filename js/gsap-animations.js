@@ -586,22 +586,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Guard: GSAP must be loaded before this file runs
   if (typeof gsap === 'undefined') return;
 
-  var swapY = logoUp.offsetHeight * 0.75; // 75% of the logo's own height
+  // CustomEase is already registered at the top of this file; just create the ease
+  if (typeof CustomEase !== 'undefined') {
+    CustomEase.create("osmo", "M0,0 C0.625,0.05 0.7,1 1,1");
+  }
+  var EASE     = typeof CustomEase !== 'undefined' ? "osmo" : "power2.inOut";
+  var DURATION = 0.2;
+
+  // swapY is resolved lazily on first scroll so offsetHeight is never 0
+  // (elements may be hidden/zero-height at DOMContentLoaded in Webflow)
+  var swapY = null;
+  function getSwapY() {
+    if (!swapY) swapY = logoUp.offsetHeight * 0.75 || 12;
+    return swapY;
+  }
 
   // Initial state — logoDown hidden + offset below, others visible
-  gsap.set(logoDown, { opacity: 0, y: swapY, pointerEvents: 'none' });
-  gsap.set(logoUp,   { opacity: 1, y: 0,  pointerEvents: 'auto' });
+  gsap.set(logoDown, { opacity: 0, y: getSwapY(), pointerEvents: 'none' });
+  gsap.set(logoUp,   { opacity: 1, y: 0,           pointerEvents: 'auto' });
   gsap.set(navLinks, { opacity: 1, pointerEvents: 'auto' });
-
-  var canUseEase = typeof CustomEase !== 'undefined';
-  if (canUseEase) {
-    try {
-      gsap.registerPlugin(CustomEase);
-      CustomEase.create("osmo", "M0,0 C0.625,0.05 0.7,1 1,1");
-    } catch (_) { canUseEase = false; }
-  }
-  var EASE  = canUseEase ? "osmo" : "power2.inOut";
-  var DURATION = 0.2;
 
   var lastScrollY = window.scrollY;
   var ticking = false;
@@ -610,6 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!ticking) {
       requestAnimationFrame(function () {
         var currentScrollY = window.scrollY;
+        var dy = getSwapY();
 
         if (Math.abs(currentScrollY - lastScrollY) >= 5) {
           var down = currentScrollY > lastScrollY;
@@ -621,14 +625,14 @@ document.addEventListener('DOMContentLoaded', () => {
           // Logo-up slides out the direction of scroll, logo-down slides in from opposite
           gsap.to(logoUp, {
             opacity: down ? 0 : 1,
-            y: down ? -swapY : 0,
+            y: down ? -dy : 0,
             pointerEvents: down ? 'none' : 'auto',
             duration: DURATION,
             ease: EASE
           });
           gsap.to(logoDown, {
             opacity: down ? 1 : 0,
-            y: down ? 0 : swapY,
+            y: down ? 0 : dy,
             pointerEvents: down ? 'auto' : 'none',
             duration: DURATION,
             ease: EASE
