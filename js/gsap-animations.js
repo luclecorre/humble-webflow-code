@@ -586,16 +586,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Guard: GSAP must be loaded before this file runs
   if (typeof gsap === 'undefined') return;
 
-  // Initial state — logoDown hidden, others visible
-  gsap.set(logoDown, { opacity: 0, pointerEvents: 'none' });
-  gsap.set(logoUp,   { opacity: 1, pointerEvents: 'auto' });
+  var swapY = logoUp.offsetHeight * 0.75; // 75% of the logo's own height
+
+  // Initial state — logoDown hidden + offset below, others visible
+  gsap.set(logoDown, { opacity: 0, y: swapY, pointerEvents: 'none' });
+  gsap.set(logoUp,   { opacity: 1, y: 0,  pointerEvents: 'auto' });
   gsap.set(navLinks, { opacity: 1, pointerEvents: 'auto' });
 
   var canUseEase = typeof CustomEase !== 'undefined';
   if (canUseEase) {
     try {
       gsap.registerPlugin(CustomEase);
-      CustomEase.create("osmo", "M0,0 C0.625,0.05 0,1 1,1");
+      CustomEase.create("osmo", "M0,0 C0.625,0.05 0.7,1 1,1");
     } catch (_) { canUseEase = false; }
   }
   var EASE  = canUseEase ? "osmo" : "power2.inOut";
@@ -616,14 +618,17 @@ document.addEventListener('DOMContentLoaded', () => {
           gsap.killTweensOf(logoDown);
           gsap.killTweensOf(navLinks);
 
+          // Logo-up slides out the direction of scroll, logo-down slides in from opposite
           gsap.to(logoUp, {
             opacity: down ? 0 : 1,
+            y: down ? -swapY : 0,
             pointerEvents: down ? 'none' : 'auto',
             duration: DURATION,
             ease: EASE
           });
           gsap.to(logoDown, {
             opacity: down ? 1 : 0,
+            y: down ? 0 : swapY,
             pointerEvents: down ? 'auto' : 'none',
             duration: DURATION,
             ease: EASE
