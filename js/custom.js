@@ -621,3 +621,206 @@ if (window.location.hostname.includes('canvas.webflow.com')) {
 
   document.addEventListener('DOMContentLoaded', fixWebpImages);
 }());
+
+// =============================================================================
+// Homepage Logo Wall Cycle
+// =============================================================================
+function initLogoWallCycle() {
+  const loopDelay = 2;
+  const duration  = 0.9;
+  const stagger   = 0.2;
+
+  document.querySelectorAll('[data-logo-wall-cycle-init]').forEach(root => {
+    const list  = root.querySelector('[data-logo-wall-list]');
+    const items = Array.from(list.querySelectorAll('[data-logo-wall-item]'));
+
+    const originalTargets = items
+      .map(item => item.querySelector('[data-logo-wall-target]'))
+      .filter(Boolean);
+
+    let visibleItems = [];
+    let visibleCount = 0;
+    let logoSequence = [];
+    let sequenceIndex = 0;
+    let tl;
+
+    function isVisible(el) {
+      return window.getComputedStyle(el).display !== 'none';
+    }
+
+    function setup() {
+      if (tl) tl.kill();
+
+      visibleItems = items.filter(isVisible);
+      visibleCount = visibleItems.length;
+
+      items.forEach(item => {
+        item.querySelectorAll('[data-logo-wall-target]').forEach(el => el.remove());
+      });
+
+      const pool = originalTargets.map(n => n.cloneNode(true));
+
+      logoSequence = pool.slice();
+      sequenceIndex = 0;
+
+      for (let i = 0; i < visibleCount; i++) {
+        const parent = visibleItems[i].querySelector('[data-logo-wall-target-parent]') || visibleItems[i];
+        const logo = logoSequence[sequenceIndex % logoSequence.length];
+        sequenceIndex++;
+        parent.appendChild(logo.cloneNode(true));
+      }
+
+      scheduleWave();
+    }
+
+    function scheduleWave() {
+      tl = gsap.timeline({ onComplete: () => {
+        gsap.delayedCall(loopDelay, scheduleWave);
+      }});
+
+      visibleItems.forEach((container, i) => {
+        tl.call(() => swapSlot(container), null, i * stagger);
+      });
+    }
+
+    function swapSlot(container) {
+      const parent = container.querySelector('[data-logo-wall-target-parent]') || container;
+      const existing = parent.querySelectorAll('[data-logo-wall-target]');
+      if (existing.length > 1) return;
+
+      const current  = parent.querySelector('[data-logo-wall-target]');
+      const incoming = logoSequence[sequenceIndex % logoSequence.length].cloneNode(true);
+      sequenceIndex++;
+
+      gsap.set(incoming, { yPercent: 50, autoAlpha: 0 });
+      parent.appendChild(incoming);
+
+      if (current) {
+        gsap.to(current, {
+          yPercent: -50,
+          autoAlpha: 0,
+          duration,
+          ease: 'expo.inOut',
+          onComplete: () => current.remove()
+        });
+      }
+
+      gsap.to(incoming, {
+        yPercent: 0,
+        autoAlpha: 1,
+        duration,
+        delay: 0.1,
+        ease: 'expo.inOut'
+      });
+    }
+
+    setup();
+
+    ScrollTrigger.create({
+      trigger: root,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter:     () => tl && tl.play(),
+      onLeave:     () => tl && tl.pause(),
+      onEnterBack: () => tl && tl.play(),
+      onLeaveBack: () => tl && tl.pause()
+    });
+
+    document.addEventListener('visibilitychange', () =>
+      document.hidden ? tl && tl.pause() : tl && tl.play()
+    );
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initLogoWallCycle();
+});
+
+
+// =============================================================================
+// Homepage Services Hover Text
+// =============================================================================
+  if (window.innerWidth >= 992) {
+    const textEl = document.getElementById('services-text');
+    const copy = {
+      strategy: "Positioning, planning and systems. The thinking that makes everything else easier to build.",
+      marketing: "Paid social, Google Ads and email. Run with a clear view of what's working and why.",
+      websites: "Webflow, Shopify and custom builds. Designed to work and built to last.",
+      creative: "Brand identity, presentation decks, content and film. Creative that earns its place."
+    };
+    document.querySelectorAll('[data-service]').forEach(col => {
+      col.addEventListener('mouseenter', () => {
+        textEl.textContent = copy[col.dataset.service];
+        textEl.style.opacity = '1';
+      });
+      col.addEventListener('mouseleave', () => {
+        textEl.style.opacity = '0';
+      });
+    });
+  }
+
+// =============================================================================
+// Homepage Nav Logo Scroll Show/Hide
+// =============================================================================
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+
+        if (Math.abs(currentScrollY - lastScrollY) >= 5) {
+          const isScrollingDown = currentScrollY > lastScrollY;
+
+          document.querySelector('.logo-scroll-up').style.display = isScrollingDown ? 'none' : 'block';
+          document.querySelector('.logo-scroll-down').style.display = isScrollingDown ? 'block' : 'none';
+
+          lastScrollY = currentScrollY;
+        }
+
+        ticking = false;
+      });
+
+      ticking = true;
+    }
+  });
+
+// =============================================================================
+// Homepage CSS Marquee
+// =============================================================================
+function initCSSMarquee() {
+  const pixelsPerSecond = 75; // Set the marquee speed (pixels per second)
+  const marquees = document.querySelectorAll('[data-css-marquee]');
+  
+  // Duplicate each [data-css-marquee-list] element inside its container
+  marquees.forEach(marquee => {
+    marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+      const duplicate = list.cloneNode(true);
+      marquee.appendChild(duplicate);
+    });
+  });
+
+  // Create an IntersectionObserver to check if the marquee container is in view
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      entry.target.querySelectorAll('[data-css-marquee-list]').forEach(list => 
+        list.style.animationPlayState = entry.isIntersecting ? 'running' : 'paused'
+      );
+    });
+  }, { threshold: 0 });
+  
+  // Calculate the width and set the animation duration accordingly
+  marquees.forEach(marquee => {
+    marquee.querySelectorAll('[data-css-marquee-list]').forEach(list => {
+      list.style.animationDuration = (list.offsetWidth / pixelsPerSecond) + 's';
+      list.style.animationPlayState = 'paused';
+    });
+    observer.observe(marquee);
+  });
+}
+
+// Initialize CSS Marquee
+document.addEventListener('DOMContentLoaded', function() {
+  initCSSMarquee();
+});

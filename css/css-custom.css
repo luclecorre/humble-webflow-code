@@ -1,160 +1,161 @@
-/* Hide native scrollbar (Lenis handles scrolling) */
-html {
-  scrollbar-width: none; /* Firefox */
-}
-html::-webkit-scrollbar {
-  display: none; /* Chrome, Safari */
-}
+  /* Hide native scrollbar (Lenis handles scrolling) */
+  html {
+    scrollbar-width: none; /* Firefox */
+  }
+  html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
 
-/* Preloader */
-.wf-design-mode .loader {
-  display: none;
-}
+  /* Preloader */
+  .wf-design-mode .loader {
+    display: none;
+  }
 
-.wf-design-mode .loader.show-in-designer {
-  display: block !important;
-}
+  .wf-design-mode .loader.show-in-designer {
+    display: block !important;
+  }
 
-[data-load-reset]{ opacity: 0; }
+  [data-load-reset] {
+    opacity: 0;
+  }
 
-[data-load-progress] {
-  height: 2px;
-  background-color: #e9fe00;
-}
+  [data-load-progress] {
+    height: 2px;
+    background-color: #e9fe00;
+  }
 
-/* Current page state */
-.navbar-link.w--current .navbar-dot.is-menu {
-  background-color: var(--ui--navbar-dot-active);
-}
+  /* Current page state */
+  .navbar-link.w--current .navbar-dot.is-menu {
+    background-color: var(--ui--navbar-dot-active);
+  }
 
-/* Hover states */
-.navbar-link:hover .navbar-dot.is-menu,
-.navbar-menu-button:hover .navbar-dot.is-menu {
-  background-color: var(--ui--navbar-dot-active);
-}
+  /* Hover states */
+  .navbar-link:hover .navbar-dot.is-menu,
+  .navbar-menu-button:hover .navbar-dot.is-menu {
+    background-color: var(--ui--navbar-dot-active);
+  }
 
-/* Smooth colour transition */
-.navbar-dot.is-menu {
-  transition: background-color 0.3s ease;
-}
+  /* Smooth colour transition */
+  .navbar-dot.is-menu {
+    transition: background-color 0.3s ease;
+  }
 
+  /* ------------------------- Underline Link [https://osmo.supply/] -------------------------  */
 
-/* ------------------------- Underline Link [https://osmo.supply/] -------------------------  */
+  [data-underline-link] {
+    text-decoration: none;
+    position: relative;
+  }
 
-[data-underline-link] {
-  text-decoration: none;
-  position: relative;
-}
+  [data-underline-link]::before {
+    content: '';
+    position: absolute;
+    bottom: -0.2rem;
+    left: 0;
+    width: 100%;
+    height: 0.075rem;
+    background-color: currentColor;
+    transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
+    transform-origin: right;
+    transform: scaleX(0) rotate(0.001deg);
+  }
 
-[data-underline-link]::before {
-  content: "";
-  position: absolute;
-  bottom: -0.2rem;
-  left: 0;
-  width: 100%;
-  height: 0.075rem;
-  background-color: currentColor;
-  transition: transform 0.735s cubic-bezier(0.625, 0.05, 0, 1);
-  transform-origin: right;
-  transform: scaleX(0) rotate(0.001deg);
-}
+  @media (hover: hover) and (pointer: fine) {
+    [data-hover]:hover [data-underline-link]::before,
+    [data-underline-link]:hover::before {
+      transform-origin: left;
+      transform: scaleX(1) rotate(0.001deg);
+    }
+  }
 
-@media (hover: hover) and (pointer: fine) {
-  [data-hover]:hover [data-underline-link]::before,
-  [data-underline-link]:hover::before {
-    transform-origin: left;
-    transform: scaleX(1) rotate(0.001deg);
-  }  
-}
+  /* ------------------------- Stagger Button -------------------------  */
 
-/* ------------------------- Stagger Button -------------------------  */
+  /* Characters */
+  .btn-animate-chars [data-button-animate-chars] {
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+  }
 
-/* Characters */
-.btn-animate-chars [data-button-animate-chars] {
-  overflow: hidden;
-  position: relative;
-  display: inline-block;
-}
+  .btn-animate-chars [data-button-animate-chars] span {
+    display: inline-block;
+    position: relative;
+    text-shadow: 0px 1.3em currentColor;
+    transform: translateY(0em) rotate(0.001deg);
+    transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+  }
 
-.btn-animate-chars [data-button-animate-chars] span {
-  display: inline-block;
-  position: relative;
-  text-shadow: 0px 1.3em currentColor;
-  transform: translateY(0em) rotate(0.001deg);
-  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
-}
+  .btn-animate-chars:hover [data-button-animate-chars] span {
+    transform: translateY(-1.3em) rotate(0.001deg);
+  }
 
-.btn-animate-chars:hover [data-button-animate-chars] span {
-  transform: translateY(-1.3em) rotate(0.001deg);
-}
+  /* Icon rotation animation */
+  .btn-plus-icon {
+    transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+  }
 
-/* Icon rotation animation */
-.btn-plus-icon {
-  transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
-}
+  .btn-animate-chars:hover .btn-plus-icon {
+    transform: rotate(90deg);
+  }
 
-.btn-animate-chars:hover .btn-plus-icon {
-  transform: rotate(90deg);
-}
+  /* ------------------------- Parallax Hero -------------------------  */
 
-/* ------------------------- Parallax Hero -------------------------  */
+  [data-hero-parallax] {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    overflow: hidden;
+  }
 
-[data-hero-parallax] {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-  overflow: hidden;
-}
+  [data-hero-parallax-image] {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    height: 115%;
+    position: absolute;
+    inset: 0;
+    top: -7.5%;
+  }
 
-[data-hero-parallax-image] {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  height: 115%;
-  position: absolute;
-  inset: 0;
-  top: -7.5%;
-}
+  /* ------------------------- Parallax Footer -------------------------  */
 
-/* ------------------------- Parallax Footer -------------------------  */
+  [data-footer-parallax] {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
 
-[data-footer-parallax] {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
-}
+  [data-footer-parallax-inner] {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
 
-[data-footer-parallax-inner] {
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
+  /* Image wrapper - default auto ratio */
+  .image-wrapper-cms {
+    aspect-ratio: auto;
+    width: 100%;
+    overflow: hidden;
+  }
 
-/* Image wrapper - default auto ratio */
-.image-wrapper-cms {
-  aspect-ratio: auto;
-  width: 100%;
-  overflow: hidden;
-}
+  /* Image - default cover */
+  .image-cms {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
 
-/* Image - default cover */
-.image-cms {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
+  /* CMS dynamic background image — prevent tiling, force cover */
+  .cms-project {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
 
-/* CMS dynamic background image — prevent tiling, force cover */
-.cms-project {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-/* Mobile: grid-2-col and grid-3-col stack to single column 
+  /* Mobile: grid-2-col and grid-3-col stack to single column 
 @media (max-width: 767px) {
   .cms-project-grid.grid-2-col,
   .cms-project-grid.grid-3-col {
@@ -162,74 +163,173 @@ html::-webkit-scrollbar {
   }
 }*/
 
-
-/* ------------------------- Bunny Background Video -------------------------  */
+  /* ------------------------- Bunny Background Video -------------------------  */
 
   /* Animation */
-[data-bunny-background-init] :is(.bunny-bg__placeholder, .bunny-bg__loading) {
-  transition: opacity 0.3s linear, visibility 0.3s linear;
-}
+  [data-bunny-background-init] :is(.bunny-bg__placeholder, .bunny-bg__loading) {
+    transition:
+      opacity 0.3s linear,
+      visibility 0.3s linear;
+  }
 
-/* Placeholder */
-[data-bunny-background-init][data-player-status="playing"] .bunny-bg__placeholder,
-[data-bunny-background-init][data-player-status="paused"] .bunny-bg__placeholder,
-[data-bunny-background-init][data-player-activated="true"][data-player-status="ready"] .bunny-bg__placeholder {
-  opacity: 0;
-  visibility: hidden;
-}
+  /* Placeholder */
+  [data-bunny-background-init][data-player-status='playing'] .bunny-bg__placeholder,
+  [data-bunny-background-init][data-player-status='paused'] .bunny-bg__placeholder,
+  [data-bunny-background-init][data-player-activated='true'][data-player-status='ready'] .bunny-bg__placeholder {
+    opacity: 0;
+    visibility: hidden;
+  }
 
-/* Loading */
-[data-bunny-background-init][data-player-status="loading"] .bunny-bg__loading {
-  opacity: 1;
-  visibility: visible;
-}
+  /* Play/Pause */
+  [data-bunny-background-init][data-player-status='playing'] .bunny-bg__play-svg,
+  [data-bunny-background-init][data-player-status='loading'] .bunny-bg__play-svg {
+    display: none;
+  }
 
+  [data-bunny-background-init][data-player-status='playing'] .bunny-bg__pause-svg,
+  [data-bunny-background-init][data-player-status='loading'] .bunny-bg__pause-svg {
+    display: block;
+  }
 
-/* ------------------------- Bunny Player Video -------------------------  */
+  /* Loading */
+  [data-bunny-background-init][data-player-status='loading'] .bunny-bg__loading {
+    opacity: 1;
+    visibility: visible;
+  }
 
-/* Animation */
-[data-bunny-player-init] :is(.bunny-player__placeholder, .bunny-player__loading) {
-  transition: opacity 0.3s linear, visibility 0.3s linear;
-}
+  /* ------------------------- Bunny Player Video -------------------------  */
 
-/* Placeholder */
-[data-bunny-player-init][data-player-status="playing"] .bunny-player__placeholder,
-[data-bunny-player-init][data-player-status="paused"] .bunny-player__placeholder,
-[data-bunny-player-init][data-player-activated="true"][data-player-status="ready"] .bunny-player__placeholder {
-  opacity: 0;
-  visibility: hidden;
-}
+  /* Animation */
+  [data-bunny-player-init] :is(.bunny-player__placeholder, .bunny-player__dark, .bunny-player__playpause, .bunny-player__loading) {
+    transition:
+      opacity 0.3s linear,
+      visibility 0.3s linear;
+  }
 
-/* Loading */
-[data-bunny-player-init][data-player-status="loading"] .bunny-player__loading {
-  opacity: 1;
-  visibility: visible;
-}
+  /* Placeholder */
+  [data-bunny-player-init][data-player-status='playing'] .bunny-player__placeholder,
+  [data-bunny-player-init][data-player-status='paused'] .bunny-player__placeholder,
+  [data-bunny-player-init][data-player-activated='true'][data-player-status='ready'] .bunny-player__placeholder {
+    opacity: 0;
+    visibility: hidden;
+  }
 
-/* ------------------------- Read More / Read Less -------------------------  */
+  /* Dark Overlay */
+  [data-bunny-player-init][data-player-status='paused'] .bunny-player__dark,
+  [data-bunny-player-init][data-player-status='playing'][data-player-hover='active'] .bunny-player__dark {
+    opacity: 0.3;
+  }
 
-[data-read-more="init"] [data-read-more-toggle] {
-  display: none;
-  cursor: pointer;
-  color: inherit;
-  font: inherit;
-  text-decoration: underline;
-  margin-top: 0.5em;
-}
+  [data-bunny-player-init][data-player-status='playing'] .bunny-player__dark {
+    opacity: 0;
+  }
 
+  /* Play/Pause */
+  [data-bunny-player-init][data-player-status='playing'] .bunny-player__playpause,
+  [data-bunny-player-init][data-player-status='loading'] .bunny-player__playpause {
+    opacity: 0;
+  }
 
-/* Cover Mode */
-[data-bunny-player-init][data-player-update-size="cover"] {
-  height: 100%;
-  top: 0;
-  left: 0;
-  position: absolute;
-}
+  [data-bunny-player-init][data-player-status='playing'][data-player-hover='active'] .bunny-player__playpause {
+    opacity: 1;
+  }
 
-[data-bunny-player-init][data-player-update-size="cover"] [data-player-before] {
-  display: none;
-}
+  [data-bunny-player-init][data-player-status='playing'] .bunny-player__play-svg,
+  [data-bunny-player-init][data-player-status='loading'] .bunny-player__play-svg {
+    display: none;
+  }
 
-[data-bunny-player-init][data-player-update-size="cover"][data-player-fullscreen="false"] .bunny-player__video {
-  object-fit: cover;
-}
+  [data-bunny-player-init][data-player-status='playing'] .bunny-player__pause-svg,
+  [data-bunny-player-init][data-player-status='loading'] .bunny-player__pause-svg {
+    display: block;
+  }
+
+  /* Loading */
+  [data-bunny-player-init][data-player-status='loading'] .bunny-player__loading {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ------------------------- Read More / Read Less -------------------------  */
+
+  @media (max-width: 767px) {
+    [data-read-more-collapsed] {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  [data-read-more='init'] [data-read-more-toggle] {
+    display: none;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    font-size: 1rem;
+    text-decoration: underline;
+    margin-top: 0.5em;
+  }
+
+  /* Cover Mode */
+  [data-bunny-player-init][data-player-update-size='cover'] {
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+  }
+
+  [data-bunny-player-init][data-player-update-size='cover'] [data-player-before] {
+    display: none;
+  }
+
+  [data-bunny-player-init][data-player-update-size='cover'][data-player-fullscreen='false'] .bunny-player__video {
+    object-fit: cover;
+  }
+
+  /* Logo Wall Cycle */
+
+  [data-logo-wall-list] [data-logo-wall-item]:nth-child(n + 9) {
+    display: none;
+  }
+
+  @media screen and (max-width: 991px) {
+    .logo-wall__item {
+      width: 25%;
+    }
+
+    [data-logo-wall-list] [data-logo-wall-item]:nth-child(n + 9) {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 479px) {
+    .logo-wall__item {
+      width: 33.333%;
+    }
+
+    [data-logo-wall-list] [data-logo-wall-item]:nth-child(n + 7) {
+      display: none;
+    }
+  }
+
+  /* CSS Keyframe Animation */
+  @keyframes translateX {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  [data-css-marquee-list] {
+    animation: translateX 30s linear;
+    animation-iteration-count: infinite;
+    animation-play-state: paused;
+  }
+
+  .marquee-css {
+    mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  }

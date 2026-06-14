@@ -108,7 +108,8 @@ A CSS-only animated underline using a `::before` pseudo-element:
 - Image (`[data-hero-parallax-image]`): `height: 130%; position: absolute; inset: 0; top: -15%` — gives GSAP room to pan without revealing edges.
 
 ### Footer Parallax CSS (`[data-footer-parallax]` / `[data-footer-parallax-inner]`)
-- `will-change: transform; backface-visibility: hidden` on both wrapper and inner element.
+- Outer `[data-footer-parallax]`: `overflow: hidden; will-change: transform; backface-visibility: hidden; perspective: 1000px`.
+- Inner `[data-footer-parallax-inner]`: `will-change: transform; backface-visibility: hidden`.
 
 ### CMS Image Utilities
 - `.image-wrapper-cms`: `aspect-ratio: auto; width: 100%; overflow: hidden`.
