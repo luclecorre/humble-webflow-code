@@ -573,3 +573,189 @@ document.addEventListener("DOMContentLoaded", () => {
   initButtonCharacterStagger();
 });
 
+// =============================================================================
+// Homepage Nav Logo Scroll Show/Hide
+// =============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const logoUp = document.querySelector('.logo-scroll-up');
+  const logoDown = document.querySelector('.logo-scroll-down');
+  const navLinks = document.querySelector('.nav-links');
+
+  if (!logoUp || !logoDown || !navLinks) return;
+
+  // Guard: GSAP must be loaded before this file runs
+  if (typeof gsap === 'undefined') return;
+
+  // Initial state — logoDown hidden, others visible
+  gsap.set(logoDown, { opacity: 0, pointerEvents: 'none' });
+  gsap.set(logoUp,   { opacity: 1, pointerEvents: 'auto' });
+  gsap.set(navLinks, { opacity: 1, pointerEvents: 'auto' });
+
+  var canUseEase = typeof CustomEase !== 'undefined';
+  if (canUseEase) {
+    try {
+      gsap.registerPlugin(CustomEase);
+      CustomEase.create("osmo", "M0,0 C0.625,0.05 0,1 1,1");
+    } catch (_) { canUseEase = false; }
+  }
+  var EASE  = canUseEase ? "osmo" : "power2.inOut";
+  var DURATION = 0.5;
+
+  var lastScrollY = window.scrollY;
+  var ticking = false;
+
+  window.addEventListener('scroll', function () {
+    if (!ticking) {
+      requestAnimationFrame(function () {
+        var currentScrollY = window.scrollY;
+
+        if (Math.abs(currentScrollY - lastScrollY) >= 5) {
+          var down = currentScrollY > lastScrollY;
+
+          gsap.killTweensOf(logoUp);
+          gsap.killTweensOf(logoDown);
+          gsap.killTweensOf(navLinks);
+
+          gsap.to(logoUp, {
+            opacity: down ? 0 : 1,
+            pointerEvents: down ? 'none' : 'auto',
+            duration: DURATION,
+            ease: EASE
+          });
+          gsap.to(logoDown, {
+            opacity: down ? 1 : 0,
+            pointerEvents: down ? 'auto' : 'none',
+            duration: DURATION,
+            ease: EASE
+          });
+          gsap.to(navLinks, {
+            opacity: down ? 0 : 1,
+            pointerEvents: down ? 'none' : 'auto',
+            duration: DURATION,
+            ease: EASE
+          });
+
+          lastScrollY = currentScrollY;
+        }
+
+        ticking = false;
+      });
+
+      ticking = true;
+    }
+  });
+});
+
+// =============================================================================
+// Homepage Logo Wall Cycle
+// =============================================================================
+function initLogoWallCycle() {
+  const loopDelay = 2;
+  const duration  = 0.9;
+  const stagger   = 0.2;
+
+  document.querySelectorAll('[data-logo-wall-cycle-init]').forEach(root => {
+    const list  = root.querySelector('[data-logo-wall-list]');
+    const items = Array.from(list.querySelectorAll('[data-logo-wall-item]'));
+
+    const originalTargets = items
+      .map(item => item.querySelector('[data-logo-wall-target]'))
+      .filter(Boolean);
+
+    let visibleItems = [];
+    let visibleCount = 0;
+    let logoSequence = [];
+    let sequenceIndex = 0;
+    let tl;
+
+    function isVisible(el) {
+      return window.getComputedStyle(el).display !== 'none';
+    }
+
+    function setup() {
+      if (tl) tl.kill();
+
+      visibleItems = items.filter(isVisible);
+      visibleCount = visibleItems.length;
+
+      items.forEach(item => {
+        item.querySelectorAll('[data-logo-wall-target]').forEach(el => el.remove());
+      });
+
+      const pool = originalTargets.map(n => n.cloneNode(true));
+
+      logoSequence = pool.slice();
+      sequenceIndex = 0;
+
+      for (let i = 0; i < visibleCount; i++) {
+        const parent = visibleItems[i].querySelector('[data-logo-wall-target-parent]') || visibleItems[i];
+        const logo = logoSequence[sequenceIndex % logoSequence.length];
+        sequenceIndex++;
+        parent.appendChild(logo.cloneNode(true));
+      }
+
+      scheduleWave();
+    }
+
+    function scheduleWave() {
+      tl = gsap.timeline({ onComplete: () => {
+        gsap.delayedCall(loopDelay, scheduleWave);
+      }});
+
+      visibleItems.forEach((container, i) => {
+        tl.call(() => swapSlot(container), null, i * stagger);
+      });
+    }
+
+    function swapSlot(container) {
+      const parent = container.querySelector('[data-logo-wall-target-parent]') || container;
+      const existing = parent.querySelectorAll('[data-logo-wall-target]');
+      if (existing.length > 1) return;
+
+      const current  = parent.querySelector('[data-logo-wall-target]');
+      const incoming = logoSequence[sequenceIndex % logoSequence.length].cloneNode(true);
+      sequenceIndex++;
+
+      gsap.set(incoming, { yPercent: 50, autoAlpha: 0 });
+      parent.appendChild(incoming);
+
+      if (current) {
+        gsap.to(current, {
+          yPercent: -50,
+          autoAlpha: 0,
+          duration,
+          ease: 'expo.inOut',
+          onComplete: () => current.remove()
+        });
+      }
+
+      gsap.to(incoming, {
+        yPercent: 0,
+        autoAlpha: 1,
+        duration,
+        delay: 0.1,
+        ease: 'expo.inOut'
+      });
+    }
+
+    setup();
+
+    ScrollTrigger.create({
+      trigger: root,
+      start: 'top bottom',
+      end: 'bottom top',
+      onEnter:     () => tl && tl.play(),
+      onLeave:     () => tl && tl.pause(),
+      onEnterBack: () => tl && tl.play(),
+      onLeaveBack: () => tl && tl.pause()
+    });
+
+    document.addEventListener('visibilitychange', () =>
+      document.hidden ? tl && tl.pause() : tl && tl.play()
+    );
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initLogoWallCycle();
+});
