@@ -769,6 +769,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!logoUp || !logoDown || !navLinks) return;
 
+  gsap.registerPlugin(CustomEase);
+  CustomEase.create("osmo", "M0,0 C0.625,0.05 0,1 1,1");
+
+  const DURATION = 0.5;
+  let tweenUp, tweenDown, tweenNav;
+
   let lastScrollY = window.scrollY;
   let ticking = false;
 
@@ -779,9 +785,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (Math.abs(currentScrollY - lastScrollY) >= 5) {
           const isScrollingDown = currentScrollY > lastScrollY;
-          logoUp.style.display = isScrollingDown ? 'none' : 'block';
-          logoDown.style.display = isScrollingDown ? 'block' : 'none';
-          navLinks.style.display = isScrollingDown ? 'none' : 'flex';
+
+          if (tweenUp) tweenUp.kill();
+          if (tweenDown) tweenDown.kill();
+          if (tweenNav) tweenNav.kill();
+
+          tweenUp = gsap.to(logoUp, {
+            opacity: isScrollingDown ? 0 : 1,
+            duration: DURATION,
+            ease: "osmo",
+            onStart: function () { logoUp.style.pointerEvents = isScrollingDown ? 'none' : 'auto'; }
+          });
+          tweenDown = gsap.to(logoDown, {
+            opacity: isScrollingDown ? 1 : 0,
+            duration: DURATION,
+            ease: "osmo",
+            onStart: function () { logoDown.style.pointerEvents = isScrollingDown ? 'auto' : 'none'; }
+          });
+          tweenNav = gsap.to(navLinks, {
+            opacity: isScrollingDown ? 0 : 1,
+            duration: DURATION,
+            ease: "osmo",
+            onStart: function () { navLinks.style.pointerEvents = isScrollingDown ? 'none' : 'auto'; }
+          });
+
           lastScrollY = currentScrollY;
         }
 
