@@ -807,10 +807,13 @@ function initContactModal() {
     }});
   }
 
-  btn.addEventListener('click', openModal);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    isOpen ? closeModal() : openModal();
+  });
 
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
+    if (component && !component.contains(e.target)) closeModal();
   });
 
   const closeBtn = modal.querySelector('.contact_modal-close');
