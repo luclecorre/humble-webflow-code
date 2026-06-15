@@ -699,6 +699,7 @@ function initMutliFilterSetupMultiMatch(){
       if (el.getAttribute('data-filter-status') !== next) {
         el.setAttribute('data-filter-status', next);
         el.setAttribute('aria-hidden', on ? 'false' : 'true');
+        if (on) gsap.set(el, { clearProps: 'opacity,visibility' });
       }
     };
 
