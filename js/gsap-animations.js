@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CustomEase.create("osmo", "M0,0 C0.625,0.05 0,1 1,1");
   }
   var EASE     = typeof CustomEase !== 'undefined' ? "osmo" : "power2.inOut";
-  var DURATION = 0.3;
+  var DURATION = 0.2;
 
   // swapY is resolved lazily on first scroll so offsetHeight is never 0
   // (elements may be hidden/zero-height at DOMContentLoaded in Webflow)
