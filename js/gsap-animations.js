@@ -605,6 +605,8 @@ function initContactModal() {
   });
   document.body.appendChild(backdrop);
 
+  // Keep modal always composited so backdrop-filter renders instantly on open
+  modal.style.willChange = 'transform';
   gsap.set(modal, { autoAlpha: 0, pointerEvents: 'none' });
 
   let isOpen = false;
@@ -619,13 +621,7 @@ function initContactModal() {
     gsap.set(btn, { pointerEvents: 'none', autoAlpha: 0 });
     gsap.set(backdrop, { display: 'block', pointerEvents: 'auto' });
     gsap.set(modal, { pointerEvents: 'auto' });
-    // Force GPU repaint so backdrop-filter activates immediately
-    modal.style.willChange = 'opacity';
-    requestAnimationFrame(() => {
-      gsap.to(modal, { autoAlpha: 1, duration: 0.35, ease: 'power3.out', onComplete: () => {
-        modal.style.willChange = '';
-      }});
-    });
+    gsap.to(modal, { autoAlpha: 1, duration: 0.15, ease: 'power2.out' });
   }
 
   function closeModal() {
@@ -633,7 +629,7 @@ function initContactModal() {
     isOpen = false;
 
     gsap.set(backdrop, { pointerEvents: 'none' });
-    gsap.to(modal, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
+    gsap.to(modal, { autoAlpha: 0, duration: 0.1, ease: 'power2.in', onComplete: () => {
       gsap.set(modal, { pointerEvents: 'none' });
       gsap.set(backdrop, { display: 'none' });
       gsap.set(btn, { pointerEvents: 'auto', autoAlpha: 1 });
