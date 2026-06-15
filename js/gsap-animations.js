@@ -35,7 +35,11 @@ function initLogoRevealLoader(){
   .add("hideContent")
   .to(bg, { yPercent: -101, duration: 0.6 }, "hideContent")
   .set(wrap, { display: "none" })
-  .call(function () { document.dispatchEvent(new CustomEvent("loaderComplete")); });
+  .call(function () {
+    document.body.style.overflow = '';
+    if (window.lenis) window.lenis.start();
+    document.dispatchEvent(new CustomEvent("loaderComplete"));
+  });
 
   // If there are items to hide FOUC for, reset them at the start
   if (resetTargets.length) {
