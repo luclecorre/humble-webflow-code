@@ -597,8 +597,11 @@ function initContactModal() {
   const modal = document.querySelector('.contact_modal');
   if (!btn || !modal) return;
 
+  const overlay = document.querySelector('.contact_modal-overlay');
+
   gsap.set(modal, { display: 'none' });
   gsap.set(btn, { display: 'none' });
+  if (overlay) gsap.set(overlay, { pointerEvents: 'none' });
   document.addEventListener('loaderComplete', () => gsap.set(btn, { display: 'block' }), { once: true });
 
   let isOpen = false;
@@ -608,6 +611,7 @@ function initContactModal() {
     isOpen = true;
     gsap.set(btn, { display: 'none' });
     gsap.set(modal, { display: 'block' });
+    if (overlay) gsap.set(overlay, { pointerEvents: 'auto' });
     if (window.lenis) window.lenis.stop();
     document.body.style.overflow = 'hidden';
   }
@@ -617,6 +621,7 @@ function initContactModal() {
     isOpen = false;
     gsap.set(modal, { display: 'none' });
     gsap.set(btn, { display: 'block' });
+    if (overlay) gsap.set(overlay, { pointerEvents: 'none' });
     if (window.lenis) window.lenis.start();
     document.body.style.overflow = '';
   }
@@ -629,7 +634,9 @@ function initContactModal() {
     });
   });
 
-  const closeBtn = modal.querySelector('.contact_modal-close');
+  if (overlay) overlay.addEventListener('click', closeModal);
+
+  const closeBtn = modal.querySelector('.contact_modal-close, .contact_modal-icon');
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
   document.addEventListener('keydown', (e) => {
