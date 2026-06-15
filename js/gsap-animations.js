@@ -597,52 +597,28 @@ function initContactModal() {
   const modal = document.querySelector('.contact_modal');
   if (!btn || !modal) return;
 
-  // Backdrop: always composited (visibility not display) so backdrop-filter is instant
-  const backdrop = document.createElement('div');
-  Object.assign(backdrop.style, {
-    position: 'fixed', inset: '0', background: 'transparent',
-    backdropFilter: 'blur(8px)', webkitBackdropFilter: 'blur(8px)',
-    zIndex: '998', visibility: 'hidden', pointerEvents: 'none'
-  });
-  document.body.appendChild(backdrop);
-
-  // Use opacity only (never visibility/display) so backdrop-filter stays composited
-  modal.style.willChange = 'opacity';
-  modal.style.visibility = 'hidden';
-  modal.style.opacity = '0';
-  modal.style.pointerEvents = 'none';
-  modal.style.transition = 'none';
+  gsap.set(modal, { display: 'none' });
+  gsap.set(btn, { display: 'none' });
+  document.addEventListener('loaderComplete', () => gsap.set(btn, { display: 'block' }), { once: true });
 
   let isOpen = false;
 
   function openModal() {
     if (isOpen) return;
     isOpen = true;
-
+    gsap.set(btn, { display: 'none' });
+    gsap.set(modal, { display: 'block' });
     if (window.lenis) window.lenis.stop();
     document.body.style.overflow = 'hidden';
-
-    gsap.set(btn, { pointerEvents: 'none', autoAlpha: 0 });
-    gsap.set(backdrop, { visibility: 'visible', pointerEvents: 'auto' });
-
-    modal.style.visibility = 'visible';
-    modal.style.pointerEvents = 'auto';
-    gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: 'power2.out' });
   }
 
   function closeModal() {
     if (!isOpen) return;
     isOpen = false;
-
-    gsap.set(backdrop, { pointerEvents: 'none' });
-    gsap.to(modal, { opacity: 0, duration: 0.1, ease: 'power2.in', onComplete: () => {
-      modal.style.visibility = 'hidden';
-      modal.style.pointerEvents = 'none';
-      gsap.set(backdrop, { visibility: 'hidden', pointerEvents: 'none' });
-      gsap.set(btn, { pointerEvents: 'auto', autoAlpha: 1 });
-      if (window.lenis) window.lenis.start();
-      document.body.style.overflow = '';
-    }});
+    gsap.set(modal, { display: 'none' });
+    gsap.set(btn, { display: 'block' });
+    if (window.lenis) window.lenis.start();
+    document.body.style.overflow = '';
   }
 
   document.querySelectorAll('.contact_modal-button, .contact_modal-open').forEach(trigger => {
@@ -652,8 +628,6 @@ function initContactModal() {
       isOpen ? closeModal() : openModal();
     });
   });
-
-  backdrop.addEventListener('click', closeModal);
 
   const closeBtn = modal.querySelector('.contact_modal-close');
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
