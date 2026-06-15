@@ -44,183 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initLogoRevealLoader();
 });
 
-// =============================================================================
-// CONTACT BUTTON ANIMATION
-// =============================================================================
-(function () {
-  document.addEventListener("DOMContentLoaded", function () {
-    var btn = document.querySelector(".contact-button");
-    if (!btn) {
-      console.warn(
-        "Contact button not found - check .contact-button class exists"
-      );
-      return;
-    }
-
-    var inner = btn.querySelector(".contact-inner");
-    var emailEl = btn.querySelector(".email");
-    var textEl = btn.querySelector(".contact-text");
-
-    // Read email from data-email attribute
-    var email = btn.getAttribute("data-email");
-    if (!email) {
-      console.error("No email found in data-email attribute");
-      return;
-    }
-
-    // GSAP animation sizes
-    var compactWidth = 90;
-    var expandedWidth = 290;
-
-    // Track button state
-    var isExpanded = false;
-    var copyTimeout = null;
-    var isDisabled = false;
-
-    // Ensure initial email hidden
-    gsap.set(emailEl, { autoAlpha: 0 });
-
-    // Build timeline - faster animation with stronger easing
-    var tl = gsap.timeline({
-      paused: true,
-      onStart: function () {
-        // Show email immediately when animation starts
-        gsap.set(emailEl, { autoAlpha: 1 });
-      },
-      onReverseComplete: function () {
-        // Hide email immediately when reversed
-        gsap.set(emailEl, { autoAlpha: 0 });
-      },
-    });
-    tl.to(inner, { width: expandedWidth, duration: 0.18, ease: "power3.out" });
-
-    // Copy function
-    function copyToClipboard() {
-      // Modern clipboard API
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard
-          .writeText(email)
-          .then(function () {
-            showCopiedState();
-          })
-          .catch(function (err) {
-            console.error("Failed to copy:", err);
-            fallbackCopy();
-          });
-      } else {
-        fallbackCopy();
-      }
-    }
-
-    // Fallback copy method for older browsers
-    function fallbackCopy() {
-      var textarea = document.createElement("textarea");
-      textarea.value = email;
-      textarea.style.position = "fixed";
-      textarea.style.opacity = "0";
-      document.body.appendChild(textarea);
-      textarea.focus();
-      textarea.select();
-
-      try {
-        var successful = document.execCommand("copy");
-        if (successful) {
-          showCopiedState();
-        } else {
-          console.error("Copy command failed");
-        }
-      } catch (err) {
-        console.error("Fallback copy failed:", err);
-      }
-
-      document.body.removeChild(textarea);
-    }
-
-    // Show "COPIED!" state
-    function showCopiedState() {
-      isDisabled = true;
-
-      if (textEl) {
-        textEl.textContent = "COPIED";
-        textEl.style.color = "var(--brand)";
-      }
-      btn.classList.add("copied");
-      btn.setAttribute("aria-label", "Email copied to clipboard");
-
-      // Reset after 2.5 seconds
-      if (copyTimeout) clearTimeout(copyTimeout);
-      copyTimeout = setTimeout(function () {
-        if (textEl) {
-          textEl.textContent = "CONTACT";
-          textEl.style.color = "";
-        }
-        btn.classList.remove("copied");
-        btn.setAttribute("aria-label", "Copy email");
-        tl.reverse();
-        isExpanded = false;
-        isDisabled = false;
-        copyTimeout = null;
-      }, 2500);
-    }
-
-    // Reset button to initial state
-    function resetButton() {
-      if (isExpanded) {
-        tl.reverse();
-        if (textEl) textEl.textContent = "CONTACT";
-        btn.classList.remove("copied");
-        btn.setAttribute("aria-label", "Copy email");
-        isExpanded = false;
-        if (copyTimeout) {
-          clearTimeout(copyTimeout);
-          copyTimeout = null;
-        }
-      }
-    }
-
-    // DESKTOP BEHAVIOR (hover)
-    // Hover to expand/collapse
-    btn.addEventListener("mouseenter", function () {
-      // Only expand if not in copied state
-      if (!btn.classList.contains("copied")) {
-        tl.play();
-        if (textEl) {
-          textEl.textContent = "COPY";
-          textEl.style.color = "var(--brand)";
-        }
-        isExpanded = true;
-      }
-    });
-
-    btn.addEventListener("mouseleave", function () {
-      // Don't collapse if in copied state
-      if (!btn.classList.contains("copied")) {
-        tl.reverse();
-        if (textEl) {
-          textEl.textContent = "CONTACT";
-          textEl.style.color = "";
-        }
-        isExpanded = false;
-      }
-    });
-
-    // Click to copy (when already expanded by hover)
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (isExpanded && !isDisabled && !btn.classList.contains("copied")) {
-        copyToClipboard();
-      }
-    });
-
-    // Accessibility: keyboard Enter/Space
-    btn.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        btn.click();
-      }
-    });
-  });
-})();
 
 // =============================================================================
 // SHOW/HIDE NAVBAR ON SCROLL
@@ -774,10 +597,16 @@ function initContactModal() {
   const modal = document.querySelector('.contact_modal');
   if (!btn || !modal) return;
 
-  const component = modal.querySelector('.contact_component');
+  // Create backdrop
+  const backdrop = document.createElement('div');
+  Object.assign(backdrop.style, {
+    position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.6)',
+    zIndex: '998', display: 'none'
+  });
+  document.body.appendChild(backdrop);
 
-  gsap.set(modal, { display: 'none', autoAlpha: 0, pointerEvents: 'none' });
-  if (component) gsap.set(component, { scale: 0.96, y: 16 });
+  gsap.set(modal, { autoAlpha: 0, pointerEvents: 'none' });
+  gsap.set(backdrop, { autoAlpha: 0 });
 
   let isOpen = false;
 
@@ -788,20 +617,21 @@ function initContactModal() {
     if (window.lenis) window.lenis.stop();
     document.body.style.overflow = 'hidden';
 
-    gsap.set(modal, { display: 'block', pointerEvents: 'auto' });
+    gsap.set(backdrop, { display: 'block' });
+    gsap.to(backdrop, { autoAlpha: 1, duration: 0.35, ease: 'power3.out' });
+    gsap.set(modal, { pointerEvents: 'auto' });
     gsap.to(modal, { autoAlpha: 1, duration: 0.35, ease: 'power3.out' });
-    if (component) {
-      gsap.to(component, { scale: 1, y: 0, duration: 0.45, ease: 'power3.out' });
-    }
   }
 
   function closeModal() {
     if (!isOpen) return;
     isOpen = false;
 
+    gsap.to(backdrop, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
+      gsap.set(backdrop, { display: 'none' });
+    }});
     gsap.to(modal, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
-      gsap.set(modal, { display: 'none', pointerEvents: 'none' });
-      if (component) gsap.set(component, { scale: 0.96, y: 16 });
+      gsap.set(modal, { pointerEvents: 'none' });
       if (window.lenis) window.lenis.start();
       document.body.style.overflow = '';
     }});
@@ -815,9 +645,7 @@ function initContactModal() {
     });
   });
 
-  modal.addEventListener('click', (e) => {
-    if (component && !component.contains(e.target)) closeModal();
-  });
+  backdrop.addEventListener('click', closeModal);
 
   const closeBtn = modal.querySelector('.contact_modal-close');
   if (closeBtn) closeBtn.addEventListener('click', closeModal);
