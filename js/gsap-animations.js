@@ -597,17 +597,21 @@ function initContactModal() {
   const modal = document.querySelector('.contact_modal');
   if (!btn || !modal) return;
 
-  // Transparent click-catcher backdrop (closes modal when clicking outside)
+  // Backdrop: always composited (visibility not display) so backdrop-filter is instant
   const backdrop = document.createElement('div');
   Object.assign(backdrop.style, {
     position: 'fixed', inset: '0', background: 'transparent',
-    zIndex: '998', display: 'none', pointerEvents: 'none'
+    backdropFilter: 'blur(8px)', webkitBackdropFilter: 'blur(8px)',
+    zIndex: '998', visibility: 'hidden', pointerEvents: 'none'
   });
   document.body.appendChild(backdrop);
 
-  // Keep modal always composited so backdrop-filter renders instantly on open
-  modal.style.willChange = 'transform';
-  gsap.set(modal, { autoAlpha: 0, pointerEvents: 'none' });
+  // Use opacity only (never visibility/display) so backdrop-filter stays composited
+  modal.style.willChange = 'opacity';
+  modal.style.visibility = 'hidden';
+  modal.style.opacity = '0';
+  modal.style.pointerEvents = 'none';
+  modal.style.transition = 'none';
 
   let isOpen = false;
 
@@ -619,9 +623,11 @@ function initContactModal() {
     document.body.style.overflow = 'hidden';
 
     gsap.set(btn, { pointerEvents: 'none', autoAlpha: 0 });
-    gsap.set(backdrop, { display: 'block', pointerEvents: 'auto' });
-    gsap.set(modal, { pointerEvents: 'auto' });
-    gsap.to(modal, { autoAlpha: 1, duration: 0.15, ease: 'power2.out' });
+    gsap.set(backdrop, { visibility: 'visible', pointerEvents: 'auto' });
+
+    modal.style.visibility = 'visible';
+    modal.style.pointerEvents = 'auto';
+    gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: 'power2.out' });
   }
 
   function closeModal() {
@@ -629,9 +635,10 @@ function initContactModal() {
     isOpen = false;
 
     gsap.set(backdrop, { pointerEvents: 'none' });
-    gsap.to(modal, { autoAlpha: 0, duration: 0.1, ease: 'power2.in', onComplete: () => {
-      gsap.set(modal, { pointerEvents: 'none' });
-      gsap.set(backdrop, { display: 'none' });
+    gsap.to(modal, { opacity: 0, duration: 0.1, ease: 'power2.in', onComplete: () => {
+      modal.style.visibility = 'hidden';
+      modal.style.pointerEvents = 'none';
+      gsap.set(backdrop, { visibility: 'hidden', pointerEvents: 'none' });
       gsap.set(btn, { pointerEvents: 'auto', autoAlpha: 1 });
       if (window.lenis) window.lenis.start();
       document.body.style.overflow = '';
