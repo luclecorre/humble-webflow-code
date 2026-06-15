@@ -582,7 +582,7 @@ document.addEventListener('DOMContentLoaded', function() {
       case 'STRATEGY':
         item.style.borderRadius = '0.4em 0.1em 0.4em 0.1em';
         break;
-      case 'WEBSITES':
+      case 'WEBSITE':
         item.style.borderRadius = '0.2em';
         break;
     }
@@ -632,7 +632,7 @@ if (window.location.hostname.includes('canvas.webflow.com')) {
     const copy = {
       strategy: "Positioning, planning and systems. The thinking that makes everything else easier to build.",
       marketing: "Paid social, Google Ads and email. Run with a clear view of what's working and why.",
-      websites: "Webflow, Shopify and custom builds. Designed to work and built to last.",
+      website: "Webflow, Shopify and custom builds. Designed to work and built to last.",
       creative: "Brand identity, presentation decks, content and film. Creative that earns its place."
     };
     document.querySelectorAll('[data-service]').forEach(col => {
