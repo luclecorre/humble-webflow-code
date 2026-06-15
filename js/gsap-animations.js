@@ -597,16 +597,15 @@ function initContactModal() {
   const modal = document.querySelector('.contact_modal');
   if (!btn || !modal) return;
 
-  // Create backdrop
+  // Transparent click-catcher backdrop (closes modal when clicking outside)
   const backdrop = document.createElement('div');
   Object.assign(backdrop.style, {
-    position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.6)',
-    zIndex: '998', display: 'none'
+    position: 'fixed', inset: '0', background: 'transparent',
+    zIndex: '998', display: 'none', pointerEvents: 'none'
   });
   document.body.appendChild(backdrop);
 
   gsap.set(modal, { autoAlpha: 0, pointerEvents: 'none' });
-  gsap.set(backdrop, { autoAlpha: 0 });
 
   let isOpen = false;
 
@@ -617,21 +616,27 @@ function initContactModal() {
     if (window.lenis) window.lenis.stop();
     document.body.style.overflow = 'hidden';
 
-    gsap.set(backdrop, { display: 'block' });
-    gsap.to(backdrop, { autoAlpha: 1, duration: 0.35, ease: 'power3.out' });
+    gsap.set(btn, { pointerEvents: 'none', autoAlpha: 0 });
+    gsap.set(backdrop, { display: 'block', pointerEvents: 'auto' });
     gsap.set(modal, { pointerEvents: 'auto' });
-    gsap.to(modal, { autoAlpha: 1, duration: 0.35, ease: 'power3.out' });
+    // Force GPU repaint so backdrop-filter activates immediately
+    modal.style.willChange = 'opacity';
+    requestAnimationFrame(() => {
+      gsap.to(modal, { autoAlpha: 1, duration: 0.35, ease: 'power3.out', onComplete: () => {
+        modal.style.willChange = '';
+      }});
+    });
   }
 
   function closeModal() {
     if (!isOpen) return;
     isOpen = false;
 
-    gsap.to(backdrop, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
-      gsap.set(backdrop, { display: 'none' });
-    }});
+    gsap.set(backdrop, { pointerEvents: 'none' });
     gsap.to(modal, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
       gsap.set(modal, { pointerEvents: 'none' });
+      gsap.set(backdrop, { display: 'none' });
+      gsap.set(btn, { pointerEvents: 'auto', autoAlpha: 1 });
       if (window.lenis) window.lenis.start();
       document.body.style.overflow = '';
     }});
