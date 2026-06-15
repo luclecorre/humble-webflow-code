@@ -765,3 +765,62 @@ function initLogoWallCycle() {
 document.addEventListener('DOMContentLoaded', () => {
   initLogoWallCycle();
 });
+
+// =============================================================================
+// CONTACT MODAL
+// =============================================================================
+function initContactModal() {
+  const btn   = document.querySelector('.contact_modal-button');
+  const modal = document.querySelector('.contact_modal');
+  if (!btn || !modal) return;
+
+  const component = modal.querySelector('.contact_component');
+
+  gsap.set(modal, { display: 'none', autoAlpha: 0, pointerEvents: 'none' });
+  if (component) gsap.set(component, { scale: 0.96, y: 16 });
+
+  let isOpen = false;
+
+  function openModal() {
+    if (isOpen) return;
+    isOpen = true;
+
+    if (window.lenis) window.lenis.stop();
+    document.body.style.overflow = 'hidden';
+
+    gsap.set(modal, { display: 'block', pointerEvents: 'auto' });
+    gsap.to(modal, { autoAlpha: 1, duration: 0.35, ease: 'power3.out' });
+    if (component) {
+      gsap.to(component, { scale: 1, y: 0, duration: 0.45, ease: 'power3.out' });
+    }
+  }
+
+  function closeModal() {
+    if (!isOpen) return;
+    isOpen = false;
+
+    gsap.to(modal, { autoAlpha: 0, duration: 0.25, ease: 'power2.in', onComplete: () => {
+      gsap.set(modal, { display: 'none', pointerEvents: 'none' });
+      if (component) gsap.set(component, { scale: 0.96, y: 16 });
+      if (window.lenis) window.lenis.start();
+      document.body.style.overflow = '';
+    }});
+  }
+
+  btn.addEventListener('click', openModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  const closeBtn = modal.querySelector('.contact_modal-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initContactModal();
+});
