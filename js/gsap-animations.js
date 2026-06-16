@@ -137,6 +137,7 @@ function initContentRevealScroll() {
   const prefersReduced = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
+  const hasLoader = !!document.querySelector("[data-load-wrap]");
 
   const ctx = gsap.context(() => {
     document.querySelectorAll("[data-reveal-group]").forEach((groupEl) => {
@@ -144,7 +145,10 @@ function initContentRevealScroll() {
       const groupStaggerSec =
         (parseFloat(groupEl.getAttribute("data-stagger")) || 100) / 1000; // ms � sec
       const groupDistance = groupEl.getAttribute("data-distance") || "2em";
-      const triggerStart = groupEl.getAttribute("data-start") || "top 80%";
+      const triggerStart = groupEl.getAttribute("data-start") || "top 90%";
+
+      // Above-the-fold groups reveal as soon as the loader finishes, not on scroll
+      const isAboveFold = groupEl.getBoundingClientRect().top < window.innerHeight;
 
       const animDuration = 0.6;
       const animEase = "power4.inOut";
@@ -161,18 +165,28 @@ function initContentRevealScroll() {
       );
       if (!directChildren.length) {
         gsap.set(groupEl, { y: groupDistance, autoAlpha: 0 });
-        ScrollTrigger.create({
-          trigger: groupEl,
-          start: triggerStart,
-          once: true,
-          onEnter: () =>
-            gsap.to(groupEl, {
-              y: 0,
-              autoAlpha: 1,
-              duration: animDuration,
-              ease: animEase,
-            }),
-        });
+        const reveal = () =>
+          gsap.to(groupEl, {
+            y: 0,
+            autoAlpha: 1,
+            duration: animDuration,
+            ease: animEase,
+          });
+
+        if (isAboveFold) {
+          if (hasLoader) {
+            document.addEventListener("loaderComplete", reveal, { once: true });
+          } else {
+            reveal();
+          }
+        } else {
+          ScrollTrigger.create({
+            trigger: groupEl,
+            start: triggerStart,
+            once: true,
+            onEnter: reveal,
+          });
+        }
         return;
       }
 
@@ -228,12 +242,8 @@ function initContentRevealScroll() {
       });
 
       // Reveal sequence
-      ScrollTrigger.create({
-        trigger: groupEl,
-        start: triggerStart,
-        once: true,
-        onEnter: () => {
-          const tl = gsap.timeline();
+      const reveal = () => {
+        const tl = gsap.timeline();
 
           slots.forEach((slot, slotIndex) => {
             const slotTime = slotIndex * groupStaggerSec;
@@ -286,8 +296,22 @@ function initContentRevealScroll() {
               );
             }
           });
-        },
-      });
+      };
+
+      if (isAboveFold) {
+        if (hasLoader) {
+          document.addEventListener("loaderComplete", reveal, { once: true });
+        } else {
+          reveal();
+        }
+      } else {
+        ScrollTrigger.create({
+          trigger: groupEl,
+          start: triggerStart,
+          once: true,
+          onEnter: reveal,
+        });
+      }
     });
   });
 
